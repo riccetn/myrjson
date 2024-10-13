@@ -1,4 +1,4 @@
-package se.narstrom.myr.json.stream;
+package se.narstrom.myr.json.parser;
 
 import jakarta.json.stream.JsonLocation;
 

@@ -1,4 +1,4 @@
-package se.narstrom.myr.json.stream;
+package se.narstrom.myr.json.parser;
 
 import java.io.EOFException;
 import java.io.FilterReader;

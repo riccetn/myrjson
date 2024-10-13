@@ -1,7 +1,8 @@
-package se.narstrom.myr.json.stream;
+package se.narstrom.myr.json.parser;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import jakarta.json.JsonArray;
@@ -13,17 +14,17 @@ import jakarta.json.JsonValue.ValueType;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 
-public final class MyrJsonArrayParser extends MyrJsonParserBase {
-	private final Iterator<JsonValue> iterator;
+public final class MyrJsonObjectParser extends MyrJsonParserBase {
+	private final Iterator<Map.Entry<String, JsonValue>> iterator;
 
 	private State state = State.INIT;
 
-	private JsonValue value;
+	private Map.Entry<String, JsonValue> entry;
 
 	private JsonParser subParser;
 
-	public MyrJsonArrayParser(final JsonArray array) {
-		this.iterator = array.iterator();
+	public MyrJsonObjectParser(final JsonObject object) {
+		this.iterator = object.entrySet().iterator();
 	}
 
 	@Override
@@ -33,14 +34,21 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 
 	@Override
 	public String getString() {
-		if (state != State.VALUE)
-			throw new IllegalStateException();
+		return switch (state) {
+			case KEY -> entry.getKey();
+			case VALUE -> getStringValue();
+			default -> throw new IllegalStateException();
+		};
+	}
 
+	private String getStringValue() {
 		if (subParser != null)
 			return subParser.getString();
 
+		final JsonValue value = entry.getValue();
 		if (value.getValueType() != ValueType.STRING)
 			throw new IllegalStateException();
+
 		return ((JsonString) value).getString();
 	}
 
@@ -52,8 +60,10 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 		if (subParser != null)
 			return subParser.getBigDecimal();
 
+		final JsonValue value = entry.getValue();
 		if (value.getValueType() != ValueType.NUMBER)
 			throw new IllegalStateException();
+
 		return ((JsonNumber) value).bigDecimalValue();
 	}
 
@@ -72,6 +82,7 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 		return switch (state) {
 			case INIT -> nextInit();
 			case START -> nextStart();
+			case KEY -> nextKey();
 			case VALUE -> nextValue();
 			case END -> throw new NoSuchElementException();
 		};
@@ -79,45 +90,31 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 
 	private Event nextInit() {
 		state = State.START;
-		return Event.START_ARRAY;
+		return Event.START_OBJECT;
 	}
 
 	private Event nextStart() {
 		if (iterator.hasNext()) {
-			value = iterator.next();
-			state = State.VALUE;
-
-			return valueToEvent();
+			entry = iterator.next();
+			state = State.KEY;
+			return Event.KEY_NAME;
 		} else {
 			state = State.END;
-			return Event.END_ARRAY;
+			return Event.END_OBJECT;
 		}
 	}
 
-	private Event nextValue() {
-		if (subParser != null && subParser.hasNext())
-			return subParser.next();
+	private Event nextKey() {
+		state = State.VALUE;
 
-		subParser = null;
-		value = null;
-
-		if (iterator.hasNext()) {
-			value = iterator.next();
-			return valueToEvent();
-		}
-
-		state = State.END;
-		return Event.END_ARRAY;
-	}
-
-	private Event valueToEvent() {
+		final JsonValue value = entry.getValue();
 		return switch (value.getValueType()) {
 			case OBJECT -> {
-				subParser = new MyrJsonObjectParser((JsonObject) value);
+				subParser = new MyrJsonObjectParser((JsonObject) entry.getValue());
 				yield subParser.next();
 			}
 			case ARRAY -> {
-				subParser = new MyrJsonArrayParser((JsonArray) value);
+				subParser = new MyrJsonArrayParser((JsonArray) entry.getValue());
 				yield subParser.next();
 			}
 			case STRING -> Event.VALUE_STRING;
@@ -128,7 +125,24 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 		};
 	}
 
+	private Event nextValue() {
+		if (subParser != null && subParser.hasNext())
+			return subParser.next();
+
+		subParser = null;
+		entry = null;
+
+		if (iterator.hasNext()) {
+			entry = iterator.next();
+			state = State.KEY;
+			return Event.KEY_NAME;
+		}
+
+		state = State.END;
+		return Event.END_OBJECT;
+	}
+
 	private enum State {
-		INIT, START, VALUE, END
+		INIT, START, KEY, VALUE, END
 	}
 }

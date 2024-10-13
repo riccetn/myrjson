@@ -1,4 +1,4 @@
-package se.narstrom.myr.json.stream;
+package se.narstrom.myr.json.parser;
 
 import java.io.IOException;
 import java.math.BigDecimal;

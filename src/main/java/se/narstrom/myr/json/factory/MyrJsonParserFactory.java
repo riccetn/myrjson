@@ -13,11 +13,11 @@ import jakarta.json.JsonObject;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 import jakarta.json.stream.JsonParsingException;
-import se.narstrom.myr.json.stream.MyrReader;
-import se.narstrom.myr.json.stream.MyrJsonArrayParser;
-import se.narstrom.myr.json.stream.MyrJsonLocation;
-import se.narstrom.myr.json.stream.MyrJsonObjectParser;
-import se.narstrom.myr.json.stream.MyrJsonStreamParser;
+import se.narstrom.myr.json.parser.MyrJsonArrayParser;
+import se.narstrom.myr.json.parser.MyrJsonLocation;
+import se.narstrom.myr.json.parser.MyrJsonObjectParser;
+import se.narstrom.myr.json.parser.MyrJsonStreamParser;
+import se.narstrom.myr.json.parser.MyrReader;
 
 public final class MyrJsonParserFactory implements JsonParserFactory {
 	private final Map<String, Object> config;
