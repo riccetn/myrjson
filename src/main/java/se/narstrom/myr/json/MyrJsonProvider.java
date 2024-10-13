@@ -6,8 +6,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Map;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonNumber;
@@ -104,6 +106,16 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return createBuilderFactory(Map.of()).createArrayBuilder();
+	}
+
+	@Override
+	public JsonArrayBuilder createArrayBuilder(final Collection<?> collection) {
+		return createBuilderFactory(Map.of()).createArrayBuilder(collection);
+	}
+
+	@Override
+	public JsonArrayBuilder createArrayBuilder(final JsonArray array) {
+		return createBuilderFactory(Map.of()).createArrayBuilder(array);
 	}
 
 	@Override
