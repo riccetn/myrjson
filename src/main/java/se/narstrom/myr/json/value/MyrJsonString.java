@@ -1,5 +1,7 @@
 package se.narstrom.myr.json.value;
 
+import java.util.Objects;
+
 import jakarta.json.JsonString;
 
 public final class MyrJsonString implements JsonString {
@@ -24,4 +26,13 @@ public final class MyrJsonString implements JsonString {
 		return value;
 	}
 
+	@Override
+	public boolean equals(final Object otherObject) {
+		return (otherObject instanceof JsonString other) && Objects.equals(this.value, other.getString());
+	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
 }
