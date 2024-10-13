@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -23,22 +24,26 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final JsonValue value) {
+		Objects.requireNonNull(value);
 		list.add(value);
 		return this;
 	}
 
 	@Override
 	public JsonArrayBuilder add(final String value) {
+		Objects.requireNonNull(value);
 		return add(provider.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final BigDecimal value) {
+		Objects.requireNonNull(value);
 		return add(provider.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final BigInteger value) {
+		Objects.requireNonNull(value);
 		return add(provider.createValue(value));
 	}
 
