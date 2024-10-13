@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 import jakarta.json.JsonArrayBuilder;
@@ -118,5 +119,25 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonNumber createValue(final BigDecimal value) {
 		return new MyrJsonNumber(value);
+	}
+
+	@Override
+	public JsonNumber createValue(final BigInteger value) {
+		return createValue(new BigDecimal(value));
+	}
+
+	@Override
+	public JsonNumber createValue(final double value) {
+		return createValue(BigDecimal.valueOf(value));
+	}
+
+	@Override
+	public JsonNumber createValue(int value) {
+		return createValue(BigDecimal.valueOf(value));
+	}
+
+	@Override
+	public JsonNumber createValue(long value) {
+		return createValue(BigDecimal.valueOf(value));
 	}
 }
