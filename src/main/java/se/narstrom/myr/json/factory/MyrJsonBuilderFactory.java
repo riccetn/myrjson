@@ -7,6 +7,7 @@ import java.util.Optional;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
@@ -27,6 +28,15 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
 		return new MyrJsonObjectBuilder(provider);
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
+		final JsonObjectBuilder builder = createObjectBuilder();
+		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
+			builder.add(entry.getKey(), entry.getValue());
+		}
+		return builder;
 	}
 
 	@Override
