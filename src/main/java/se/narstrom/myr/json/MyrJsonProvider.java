@@ -30,6 +30,7 @@ import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
 import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
+import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
 import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
@@ -77,20 +78,17 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonWriter createWriter(final Writer writer) {
-		// TODO Auto-generated method stub
-		return null;
+		return createWriterFactory(Map.of()).createWriter(writer);
 	}
 
 	@Override
 	public JsonWriter createWriter(final OutputStream out) {
-		// TODO Auto-generated method stub
-		return null;
+		return createWriterFactory(Map.of()).createWriter(out);
 	}
 
 	@Override
 	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
-		// TODO Auto-generated method stub
-		return null;
+		return new MyrJsonWriterFactory(createGeneratorFactory(config));
 	}
 
 	@Override
