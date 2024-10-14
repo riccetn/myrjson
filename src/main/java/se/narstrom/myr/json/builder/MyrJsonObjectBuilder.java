@@ -87,6 +87,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	}
 
 	@Override
+	public JsonObjectBuilder remove(final String name) {
+		map.remove(Objects.requireNonNull(name));
+		return this;
+	}
+
+	@Override
 	public JsonObject build() {
 		final JsonObject obj = new MyrJsonObject(map);
 		map.clear();
