@@ -25,6 +25,7 @@ import jakarta.json.stream.JsonGeneratorFactory;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
+import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.value.MyrJsonNumber;
@@ -49,20 +50,17 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonGenerator createGenerator(final Writer writer) {
-		// TODO Auto-generated method stub
-		return null;
+		return createGeneratorFactory(Map.of()).createGenerator(writer);
 	}
 
 	@Override
 	public JsonGenerator createGenerator(final OutputStream out) {
-		// TODO Auto-generated method stub
-		return null;
+		return createGeneratorFactory(Map.of()).createGenerator(out);
 	}
 
 	@Override
 	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
-		// TODO Auto-generated method stub
-		return null;
+		return new MyrJsonGeneratorFactory(config);
 	}
 
 	@Override
