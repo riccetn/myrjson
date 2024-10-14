@@ -2,9 +2,9 @@ package se.narstrom.myr.json.builder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
@@ -24,7 +24,7 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final JsonValue value) {
-		map.put(name, value);
+		map.put(Objects.requireNonNull(name), Objects.requireNonNull(value));
 		return this;
 	}
 
@@ -79,8 +79,18 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	}
 
 	@Override
+	public JsonObjectBuilder addAll(final JsonObjectBuilder builder) {
+		for (final Map.Entry<String, JsonValue> entry : builder.build().entrySet()) {
+			add(entry.getKey(), entry.getValue());
+		}
+		return this;
+	}
+
+	@Override
 	public JsonObject build() {
-		return new MyrJsonObject(Collections.unmodifiableMap(map));
+		final JsonObject obj = new MyrJsonObject(map);
+		map.clear();
+		return obj;
 	}
 
 }

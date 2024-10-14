@@ -2,7 +2,6 @@ package se.narstrom.myr.json.factory;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -40,6 +39,15 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 	}
 
 	@Override
+	public JsonObjectBuilder createObjectBuilder(final Map<String, Object> map) {
+		final JsonObjectBuilder builder = createObjectBuilder();
+		for (final Map.Entry<String, Object> entry : map.entrySet()) {
+			builder.add(entry.getKey(), createJsonValue(entry.getValue()));
+		}
+		return builder;
+	}
+
+	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return new MyrJsonArrayBuilder(provider);
 	}
@@ -48,21 +56,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 	public JsonArrayBuilder createArrayBuilder(final Collection<?> collection) {
 		final JsonArrayBuilder builder = createArrayBuilder();
 		for (final Object obj : collection) {
-			final Object value;
-			if (obj instanceof Optional<?> opt) {
-				if (opt.isEmpty())
-					continue;
-				value = opt.get();
-			} else {
-				value = obj;
-			}
-
-			switch (value) {
-				case JsonValue val -> builder.add(val);
-				case String str -> builder.add(str);
-				case Number num -> builder.add(provider.createValue(num));
-				default -> throw new IllegalArgumentException();
-			}
+			builder.add(createJsonValue(obj));
 		}
 
 		return builder;
@@ -82,4 +76,12 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 		return config;
 	}
 
+	private JsonValue createJsonValue(final Object obj) {
+		return switch (obj) {
+			case JsonValue val -> val;
+			case String str -> provider.createValue(str);
+			case Number num -> provider.createValue(num);
+			default -> throw new IllegalArgumentException();
+		};
+	}
 }

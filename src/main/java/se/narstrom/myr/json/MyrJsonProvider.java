@@ -8,11 +8,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonNumber;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
@@ -102,6 +104,16 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
+	public JsonObjectBuilder createObjectBuilder(final Map<String, ?> map) {
+		return createBuilderFactory(Map.of()).createObjectBuilder((Map<String, Object>) map);
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
+		return createBuilderFactory(Map.of()).createObjectBuilder(object);
+	}
+
+	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return createBuilderFactory(Map.of()).createArrayBuilder();
 	}
@@ -123,12 +135,12 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonString createValue(final String value) {
-		return new MyrJsonString(value);
+		return new MyrJsonString(Objects.requireNonNull(value));
 	}
 
 	@Override
 	public JsonNumber createValue(final BigDecimal value) {
-		return new MyrJsonNumber(value);
+		return new MyrJsonNumber(Objects.requireNonNull(value));
 	}
 
 	@Override
