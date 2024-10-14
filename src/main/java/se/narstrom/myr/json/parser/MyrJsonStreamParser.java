@@ -94,15 +94,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextInit() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
-
-		final char ch = reader.readChar();
-		switch (ch) {
-			case '{' -> startObject(State.END);
-			case '[' -> startArray(State.END);
-			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, location);
-		}
+		nextValue(State.END);
 	}
 
 	private void nextObjectInit() throws IOException {
@@ -223,15 +215,18 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		event = Event.VALUE_STRING;
 	}
 
-	private void valueNumber(final State nextState, char ch) throws IOException {
+	private void valueNumber(final State nextState, final char ch0) throws IOException {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(ch);
+		sb.append(ch0);
 
-		if (ch == '-') {
+		int ch;
+		if (ch0 == '-') {
 			ch = reader.readChar();
 			if (ch < '0' || ch > '9')
 				throw new JsonParsingException("Not a number", location);
-			sb.append(ch);
+			sb.append((char) ch);
+		} else {
+			ch = ch0;
 		}
 
 		if (ch != '0') {
@@ -248,12 +243,12 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		}
 
 		if (ch == 'e' || ch == 'E') {
-			sb.append(ch);
+			sb.append((char) ch);
 			reader.readChar();
 			ch = reader.readChar();
 			if (ch != '+' && ch != '-' && (ch < '0' || ch > '9'))
 				throw new JsonParsingException("Not a number", location);
-			sb.append(ch);
+			sb.append((char) ch);
 			readDigits(sb);
 		}
 
@@ -267,11 +262,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		sb.append(ch0);
 
 		while (sb.length() < 5) {
-			final char ch = reader.peekChar();
+			final int ch = reader.peekChar();
 			if (ch < 'a' || ch > 'z')
 				break;
-			reader.readChar();
-			sb.append(ch);
+			sb.append(reader.readChar());
 		}
 
 		final String keyword = sb.toString();
@@ -287,12 +281,11 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private void readDigits(final StringBuilder sb) throws IOException {
 		while (true) {
-			final char ch = reader.peekChar();
+			final int ch = reader.peekChar();
 			if (ch < '0' || ch > '9')
 				return;
 
-			reader.readChar();
-			sb.append(ch);
+			sb.append(reader.readChar());
 		}
 	}
 

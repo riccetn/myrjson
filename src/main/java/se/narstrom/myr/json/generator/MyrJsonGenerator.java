@@ -247,15 +247,16 @@ public final class MyrJsonGenerator implements JsonGenerator {
 	}
 
 	private void beforeValue() {
-		if (state != State.OBJECT_VALUE && state != State.ARRAY_VALUE)
-			throw new JsonGenerationException("Wrong state: " + state);
+		state = switch (state) {
+			case INIT -> State.END;
+			case OBJECT_VALUE -> State.OBJECT_KEY;
+			case ARRAY_VALUE -> State.ARRAY_VALUE;
+			default -> throw new JsonGenerationException("Wrong state: " + state);
+		};
 
 		if (comma)
 			writeChar(',');
 		comma = true;
-
-		if (state == State.OBJECT_VALUE)
-			state = State.OBJECT_KEY;
 	}
 
 	private MyrJsonGenerator writeStringValue(final String str) {

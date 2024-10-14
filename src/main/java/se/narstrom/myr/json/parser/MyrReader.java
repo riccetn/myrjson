@@ -51,10 +51,10 @@ public final class MyrReader extends FilterReader {
 		return (char) ch;
 	}
 
-	public char peekChar() throws IOException {
+	public int peekChar() throws IOException {
 		maybeFillBuffer();
 		if (buflen == -1)
-			throw new EOFException();
+			return -1;
 		return buf[bufp];
 	}
 
