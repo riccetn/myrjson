@@ -12,11 +12,6 @@ import jakarta.json.stream.JsonGeneratorFactory;
 import se.narstrom.myr.json.generator.MyrJsonGenerator;
 
 public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
-	private final Map<String, Object> config;
-
-	public MyrJsonGeneratorFactory(final Map<String, ?> config) {
-		this.config = Map.copyOf(config);
-	}
 
 	@Override
 	public JsonGenerator createGenerator(final Writer writer) {
@@ -35,7 +30,7 @@ public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return config;
+		return Map.of();
 	}
 
 }

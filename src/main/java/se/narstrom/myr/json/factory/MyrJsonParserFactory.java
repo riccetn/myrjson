@@ -23,11 +23,8 @@ import se.narstrom.myr.json.parser.MyrReader;
 public final class MyrJsonParserFactory implements JsonParserFactory {
 	private final JsonProvider provider;
 
-	private final Map<String, Object> config;
-
-	public MyrJsonParserFactory(final JsonProvider provider, final Map<String, ?> config) {
+	public MyrJsonParserFactory(final JsonProvider provider) {
 		this.provider = provider;
-		this.config = Map.copyOf(config);
 	}
 
 	@Override
@@ -61,6 +58,6 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return config;
+		return Map.of();
 	}
 }

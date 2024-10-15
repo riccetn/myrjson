@@ -17,11 +17,8 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	private final JsonProvider provider;
 
-	private final Map<String, Object> config;
-
-	public MyrJsonBuilderFactory(final JsonProvider provider, final Map<String, ?> config) {
+	public MyrJsonBuilderFactory(final JsonProvider provider) {
 		this.provider = provider;
-		this.config = Map.copyOf(config);
 	}
 
 	@Override
@@ -73,7 +70,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return config;
+		return Map.of();
 	}
 
 	private JsonValue createJsonValue(final Object obj) {
