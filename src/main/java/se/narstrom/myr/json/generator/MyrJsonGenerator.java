@@ -232,6 +232,8 @@ public final class MyrJsonGenerator implements JsonGenerator {
 
 	@Override
 	public void close() {
+		if(state != State.END)
+			throw new JsonGenerationException("Wrong state: " + state);
 		try {
 			writer.close();
 		} catch (final IOException ex) {
