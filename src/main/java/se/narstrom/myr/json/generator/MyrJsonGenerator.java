@@ -211,7 +211,9 @@ public final class MyrJsonGenerator implements JsonGenerator {
 	}
 
 	@Override
-	public JsonGenerator write(double value) {
+	public JsonGenerator write(final double value) {
+		if(!Double.isFinite(value))
+			throw new NumberFormatException();
 		beforeValue();
 		return writeString(Double.toString(value));
 	}
