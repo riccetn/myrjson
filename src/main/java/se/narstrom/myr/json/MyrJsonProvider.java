@@ -160,4 +160,17 @@ public final class MyrJsonProvider extends JsonProvider {
 	public JsonNumber createValue(long value) {
 		return createValue(BigDecimal.valueOf(value));
 	}
+
+	public JsonNumber createValue(final Number number) {
+		return switch (number) {
+			case Byte num -> createValue(num.intValue());
+			case Short num -> createValue(num.intValue());
+			case Integer num -> createValue(num.intValue());
+			case Long num -> createValue(num.longValue());
+			case Double num -> createValue(num.doubleValue());
+			case BigInteger num -> createValue(num);
+			case BigDecimal num -> createValue(num);
+			default -> createValue(number.doubleValue());
+		};
+	}
 }
