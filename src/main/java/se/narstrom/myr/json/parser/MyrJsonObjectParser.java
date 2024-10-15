@@ -11,6 +11,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParser;
 
@@ -23,7 +24,8 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 
 	private JsonParser subParser;
 
-	public MyrJsonObjectParser(final JsonObject object) {
+	public MyrJsonObjectParser(final JsonProvider provider, final JsonObject object) {
+		super(provider);
 		this.iterator = object.entrySet().iterator();
 	}
 
@@ -110,11 +112,11 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 		final JsonValue value = entry.getValue();
 		return switch (value.getValueType()) {
 			case OBJECT -> {
-				subParser = new MyrJsonObjectParser((JsonObject) entry.getValue());
+				subParser = new MyrJsonObjectParser(provider, (JsonObject) entry.getValue());
 				yield subParser.next();
 			}
 			case ARRAY -> {
-				subParser = new MyrJsonArrayParser((JsonArray) entry.getValue());
+				subParser = new MyrJsonArrayParser(provider, (JsonArray) entry.getValue());
 				yield subParser.next();
 			}
 			case STRING -> Event.VALUE_STRING;

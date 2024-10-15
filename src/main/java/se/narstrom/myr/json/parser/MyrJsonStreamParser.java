@@ -6,6 +6,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
 
+import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParsingException;
 
@@ -24,7 +25,8 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private State state = State.INIT;
 
-	public MyrJsonStreamParser(final MyrReader reader) {
+	public MyrJsonStreamParser(final JsonProvider provider, final MyrReader reader) {
+		super(provider);
 		this.reader = reader;
 	}
 
