@@ -1,6 +1,7 @@
 package se.narstrom.myr.json.parser;
 
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -104,6 +105,15 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		};
 	}
 
+	@Override
+	public Stream<JsonValue> getValueStream() {
+		if (currentEvent() != null)
+			throw new IllegalStateException();
+
+		final Spliterator<JsonValue> split = new ValueSpliterator();
+		return StreamSupport.stream(split, false);
+	}
+
 	private class ArrayIterator implements Iterator<JsonValue> {
 		public ArrayIterator() {
 			MyrJsonParserBase.this.next();
@@ -149,6 +159,36 @@ public abstract class MyrJsonParserBase implements JsonParser {
 			MyrJsonParserBase.this.next();
 
 			return Map.entry(name, value);
+		}
+	}
+
+	private class ValueSpliterator implements Spliterator<JsonValue> {
+		boolean advanced = false;
+
+		@Override
+		public boolean tryAdvance(final Consumer<? super JsonValue> action) {
+			if (advanced)
+				return false;
+
+			MyrJsonParserBase.this.next();
+			action.accept(getValue());
+			advanced = true;
+			return true;
+		}
+
+		@Override
+		public Spliterator<JsonValue> trySplit() {
+			return null;
+		}
+
+		@Override
+		public long estimateSize() {
+			return 1;
+		}
+
+		@Override
+		public int characteristics() {
+			return ORDERED | SIZED;
 		}
 	}
 }
