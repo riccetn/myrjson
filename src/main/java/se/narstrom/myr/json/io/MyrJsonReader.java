@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
@@ -29,17 +30,28 @@ public final class MyrJsonReader implements JsonReader {
 
 	@Override
 	public JsonObject readObject() {
-		return (JsonObject) readValue();
+		final JsonParser.Event event = parser.next();
+		if (event != JsonParser.Event.START_OBJECT)
+			throw new JsonException("Not an object");
+		return onStartObject();
 	}
 
 	@Override
 	public JsonArray readArray() {
-		return (JsonArray) readValue();
+		final JsonParser.Event event = parser.next();
+		if (event != JsonParser.Event.START_ARRAY)
+			throw new JsonException("Not an array");
+		return onStartArray();
 	}
 
 	@Override
 	public JsonStructure read() {
-		return (JsonStructure) readValue();
+		final JsonParser.Event event = parser.next();
+		return switch (event) {
+			case START_ARRAY -> onStartArray();
+			case START_OBJECT -> onStartObject();
+			default -> throw new JsonException("Not a structure");
+		};
 	}
 
 	@Override
