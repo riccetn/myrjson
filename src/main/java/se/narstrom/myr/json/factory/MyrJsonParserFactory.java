@@ -3,6 +3,7 @@ package se.narstrom.myr.json.factory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -38,7 +39,14 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 
 	@Override
 	public JsonParser createParser(final InputStream in) {
-		return createParser(new InputStreamReader(in, StandardCharsets.UTF_8));
+		try {
+			final PushbackInputStream pbin = new PushbackInputStream(in, 4);
+			final byte[] bs = in.readNBytes(4);
+			pbin.unread(bs);
+			return createParser(new InputStreamReader(pbin, detectCharset(bs)));
+		} catch (final IOException ex) {
+			throw new JsonParsingException(ex.getMessage(), ex, new MyrJsonLocation(1, 1, 0));
+		}
 	}
 
 	@Override
@@ -59,5 +67,31 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 	@Override
 	public Map<String, ?> getConfigInUse() {
 		return Map.of();
+	}
+
+	private final Charset detectCharset(final byte[] bs) {
+		if (bs.length < 4) {
+			if (bs.length < 2)
+				throw new JsonParsingException("Empty Stream", new MyrJsonLocation(1, 1, 0));
+
+			if (bs[0] == 0 || bs[1] == 0)
+				throw new JsonParsingException("Empty Stream", new MyrJsonLocation(1, 1, 0));
+
+			return StandardCharsets.UTF_8;
+		}
+
+		if (bs[0] == 0) {
+			if (bs[1] == 0)
+				return Charset.forName("UTF-32BE");
+			else
+				return StandardCharsets.UTF_16BE;
+		} else if (bs[1] == 0) {
+			if (bs[2] == 0)
+				return Charset.forName("UTF-32LE");
+			else
+				return StandardCharsets.UTF_16LE;
+		}
+
+		return StandardCharsets.UTF_8;
 	}
 }
