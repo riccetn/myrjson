@@ -23,7 +23,6 @@ public final class MyrReader extends FilterReader {
 
 	public MyrReader(final Reader in) throws IOException {
 		super(in);
-		maybeFillBuffer();
 	}
 
 	@Override
