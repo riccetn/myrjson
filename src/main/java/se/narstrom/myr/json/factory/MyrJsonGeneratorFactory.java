@@ -12,6 +12,11 @@ import jakarta.json.stream.JsonGeneratorFactory;
 import se.narstrom.myr.json.generator.MyrJsonGenerator;
 
 public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
+	private final Object prettyPrinting;
+
+	public MyrJsonGeneratorFactory(final Map<String, ?> config) {
+		this.prettyPrinting = config.getOrDefault(JsonGenerator.PRETTY_PRINTING, null);
+	}
 
 	@Override
 	public JsonGenerator createGenerator(final Writer writer) {
@@ -30,7 +35,10 @@ public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return Map.of();
+		if (prettyPrinting != null)
+			return Map.of(JsonGenerator.PRETTY_PRINTING, prettyPrinting);
+		else
+			return Map.of();
 	}
 
 }

@@ -65,7 +65,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
-		return new MyrJsonGeneratorFactory();
+		return new MyrJsonGeneratorFactory(config);
 	}
 
 	@Override
