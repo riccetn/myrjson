@@ -20,6 +20,8 @@ public final class MyrJsonReader implements JsonReader {
 
 	private JsonParser parser;
 
+	private boolean closed = false;
+
 	public MyrJsonReader(final JsonProvider provider, final JsonParser parser) {
 		this.provider = provider;
 		this.parser = parser;
@@ -42,11 +44,16 @@ public final class MyrJsonReader implements JsonReader {
 
 	@Override
 	public void close() {
+		if (closed)
+			return;
+		closed = true;
 		parser.close();
 	}
 
 	@Override
 	public JsonValue readValue() {
+		if (closed || !parser.hasNext())
+			throw new IllegalStateException();
 		return readValue(parser.next());
 	}
 
