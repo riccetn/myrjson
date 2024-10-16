@@ -30,46 +30,39 @@ public final class MyrJsonReader implements JsonReader {
 
 	@Override
 	public JsonObject readObject() {
-		if (closed)
+		if (closed || !parser.hasNext())
 			throw new IllegalStateException();
 
 		final JsonParser.Event event = parser.next();
 		if (event != JsonParser.Event.START_OBJECT)
 			throw new JsonException("Not an object");
 
-		final JsonObject result = onStartObject();
-		close();
-		return result;
+		return onStartObject();
 	}
 
 	@Override
 	public JsonArray readArray() {
-		if (closed)
+		if (closed || !parser.hasNext())
 			throw new IllegalStateException();
 
 		final JsonParser.Event event = parser.next();
 		if (event != JsonParser.Event.START_ARRAY)
 			throw new JsonException("Not an array");
 
-		final JsonArray result = onStartArray();
-		close();
-		return result;
+		return onStartArray();
 	}
 
 	@Override
 	public JsonStructure read() {
-		if (closed)
+		if (closed || !parser.hasNext())
 			throw new IllegalStateException();
 
 		final JsonParser.Event event = parser.next();
-		final JsonStructure result = switch (event) {
+		return switch (event) {
 			case START_ARRAY -> onStartArray();
 			case START_OBJECT -> onStartObject();
 			default -> throw new JsonException("Not a structure");
 		};
-
-		close();
-		return result;
 	}
 
 	@Override
