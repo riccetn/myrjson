@@ -16,6 +16,7 @@ import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonString;
@@ -31,6 +32,7 @@ import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
+import se.narstrom.myr.json.pointer.MyrJsonPointer;
 import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
@@ -132,6 +134,11 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
+	public JsonPointer createPointer(final String pointer) {
+		return new MyrJsonPointer(pointer);
+	}
+
+	@Override
 	public JsonString createValue(final String value) {
 		return new MyrJsonString(Objects.requireNonNull(value));
 	}
@@ -161,6 +168,7 @@ public final class MyrJsonProvider extends JsonProvider {
 		return createValue(BigDecimal.valueOf(value));
 	}
 
+	@Override
 	public JsonNumber createValue(final Number number) {
 		return switch (number) {
 			case Byte num -> createValue(num.intValue());
