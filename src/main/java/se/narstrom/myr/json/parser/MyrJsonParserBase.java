@@ -63,6 +63,22 @@ public abstract class MyrJsonParserBase implements JsonParser {
 	}
 
 	@Override
+	public void skipArray() {
+		if (!isInArray())
+			return;
+
+		int nested = 1;
+
+		while (nested > 0) {
+			final Event ev = next();
+			switch (ev) {
+				case START_ARRAY -> ++nested;
+				case END_ARRAY -> --nested;
+			}
+		}
+	}
+
+	@Override
 	public JsonObject getObject() {
 		if (currentEvent() != Event.START_OBJECT)
 			throw new IllegalStateException();
@@ -92,6 +108,22 @@ public abstract class MyrJsonParserBase implements JsonParser {
 	}
 
 	@Override
+	public void skipObject() {
+		if (!isInObject())
+			return;
+
+		int nested = 1;
+
+		while (nested > 0) {
+			final Event ev = next();
+			switch (ev) {
+				case START_OBJECT -> ++nested;
+				case END_OBJECT -> --nested;
+			}
+		}
+	}
+
+	@Override
 	public JsonValue getValue() {
 		return switch (currentEvent()) {
 			case START_ARRAY -> getArray();
@@ -113,6 +145,10 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		final Spliterator<JsonValue> split = new ValueSpliterator();
 		return StreamSupport.stream(split, false);
 	}
+
+	protected abstract boolean isInArray();
+
+	protected abstract boolean isInObject();
 
 	private class ArrayIterator implements Iterator<JsonValue> {
 		public ArrayIterator() {

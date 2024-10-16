@@ -12,7 +12,6 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
-import jakarta.json.stream.JsonParser;
 
 public final class MyrJsonArrayParser extends MyrJsonParserBase {
 	private final Iterator<JsonValue> iterator;
@@ -21,7 +20,7 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 
 	private JsonValue value;
 
-	private JsonParser subParser;
+	private MyrJsonParserBase subParser;
 
 	public MyrJsonArrayParser(final JsonProvider provider, final JsonArray array) {
 		super(provider);
@@ -77,6 +76,20 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 			case VALUE -> nextValue();
 			case END -> throw new NoSuchElementException();
 		};
+	}
+
+	@Override
+	protected boolean isInArray() {
+		if (subParser != null)
+			return subParser.isInArray();
+		return true;
+	}
+
+	@Override
+	protected boolean isInObject() {
+		if (subParser != null)
+			return subParser.isInObject();
+		return false;
 	}
 
 	private Event nextInit() {

@@ -95,6 +95,22 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		}
 	}
 
+	@Override
+	protected boolean isInArray() {
+		return switch (state) {
+			case ARRAY_INIT, ARRAY_VALUE, ARRAY_COMMA -> true;
+			default -> false;
+		};
+	}
+
+	@Override
+	protected boolean isInObject() {
+		return switch (state) {
+			case OBJECT_INIT, OBJECT_KEY, OBJECT_VALUE, OBJECT_COMMA -> true;
+			default -> false;
+		};
+	}
+
 	private void nextInit() throws IOException {
 		nextValue(State.END);
 	}
