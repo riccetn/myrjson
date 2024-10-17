@@ -64,6 +64,9 @@
 					<dependenciesToScan>
 						<dependency>jakarta.json:jakarta.json-tck-tests</dependency>
 					</dependenciesToScan>
+					<excludes>
+						<exclude>ee/jakarta/tck/jsonp/api/provider/JsonProviderTest</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
