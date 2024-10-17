@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -17,14 +18,17 @@ import jakarta.json.stream.JsonParsingException;
 public final class MyrJsonReader implements JsonReader {
 	private final Logger LOG = Logger.getLogger(getClass().getName());
 
-	private JsonProvider provider;
+	private final JsonProvider provider;
 
-	private JsonParser parser;
+	private final JsonBuilderFactory builderFactory;
+
+	private final JsonParser parser;
 
 	private boolean closed = false;
 
-	public MyrJsonReader(final JsonProvider provider, final JsonParser parser) {
+	public MyrJsonReader(final JsonProvider provider, final JsonBuilderFactory builderFactory, final JsonParser parser) {
 		this.provider = provider;
+		this.builderFactory = builderFactory;
 		this.parser = parser;
 	}
 
@@ -94,7 +98,7 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	private JsonObject onStartObject() {
-		final JsonObjectBuilder builder = provider.createObjectBuilder();
+		final JsonObjectBuilder builder = builderFactory.createObjectBuilder();
 
 		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_OBJECT; event = parser.next()) {
 			if (event != JsonParser.Event.KEY_NAME)
@@ -113,7 +117,7 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	private JsonArray onStartArray() {
-		final JsonArrayBuilder builder = provider.createArrayBuilder();
+		final JsonArrayBuilder builder = builderFactory.createArrayBuilder();
 
 		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_ARRAY; event = parser.next()) {
 			builder.add(readValue(event));

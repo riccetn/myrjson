@@ -95,7 +95,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonReaderFactory createReaderFactory(final Map<String, ?> config) {
-		return new MyrJsonReaderFactory(this, createParserFactory(config));
+		return new MyrJsonReaderFactory(this, createBuilderFactory(config), createParserFactory(config));
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonBuilderFactory createBuilderFactory(final Map<String, ?> config) {
-		return new MyrJsonBuilderFactory(this, config);
+		return new MyrJsonBuilderFactory(this, (config != null) ? config : Map.of());
 	}
 
 	@Override

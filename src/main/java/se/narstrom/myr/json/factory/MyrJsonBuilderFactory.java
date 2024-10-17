@@ -28,7 +28,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.NONE);
+		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.LAST);
 	}
 
 	@Override
