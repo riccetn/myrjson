@@ -23,12 +23,12 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	public MyrJsonBuilderFactory(final JsonProvider provider, final Map<String, ?> config) {
 		this.provider = provider;
-		this.keyStrategy = ((Map<String, KeyStrategy>) config).getOrDefault(JsonConfig.KEY_STRATEGY, KeyStrategy.NONE);
+		this.keyStrategy = ((Map<String, KeyStrategy>) config).get(JsonConfig.KEY_STRATEGY);
 	}
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new MyrJsonObjectBuilder(provider, keyStrategy);
+		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.NONE);
 	}
 
 	@Override
@@ -75,7 +75,10 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return Map.of(JsonConfig.KEY_STRATEGY, keyStrategy);
+		if (keyStrategy != null)
+			return Map.of(JsonConfig.KEY_STRATEGY, keyStrategy);
+		else
+			return Map.of();
 	}
 
 	private JsonValue createJsonValue(final Object obj) {
