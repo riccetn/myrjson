@@ -2,7 +2,6 @@ package se.narstrom.myr.json.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
 
 import jakarta.json.JsonNumber;
 
@@ -65,7 +64,7 @@ public final class MyrJsonNumber implements JsonNumber {
 
 	@Override
 	public boolean equals(final Object otherObject) {
-		return (otherObject instanceof JsonNumber other) && Objects.equals(this.value, other.bigDecimalValue());
+		return (otherObject instanceof JsonNumber other) && this.value.compareTo(other.bigDecimalValue()) == 0;
 	}
 
 	@Override

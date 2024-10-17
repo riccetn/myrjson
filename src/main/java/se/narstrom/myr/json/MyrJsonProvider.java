@@ -175,10 +175,11 @@ public final class MyrJsonProvider extends JsonProvider {
 			case Short num -> createValue(num.intValue());
 			case Integer num -> createValue(num.intValue());
 			case Long num -> createValue(num.longValue());
+			case Float num -> createValue(num.doubleValue());
 			case Double num -> createValue(num.doubleValue());
 			case BigInteger num -> createValue(num);
 			case BigDecimal num -> createValue(num);
-			default -> createValue(number.doubleValue());
+			default -> createValue(number.longValue());
 		};
 	}
 }
