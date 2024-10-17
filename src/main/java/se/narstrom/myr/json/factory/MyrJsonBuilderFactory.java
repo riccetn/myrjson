@@ -6,6 +6,8 @@ import java.util.Map;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonConfig;
+import jakarta.json.JsonConfig.KeyStrategy;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -17,13 +19,16 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	private final JsonProvider provider;
 
-	public MyrJsonBuilderFactory(final JsonProvider provider) {
+	private final KeyStrategy keyStrategy;
+
+	public MyrJsonBuilderFactory(final JsonProvider provider, final Map<String, ?> config) {
 		this.provider = provider;
+		this.keyStrategy = ((Map<String, KeyStrategy>) config).getOrDefault(JsonConfig.KEY_STRATEGY, KeyStrategy.NONE);
 	}
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new MyrJsonObjectBuilder(provider);
+		return new MyrJsonObjectBuilder(provider, keyStrategy);
 	}
 
 	@Override
@@ -70,7 +75,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
-		return Map.of();
+		return Map.of(JsonConfig.KEY_STRATEGY, keyStrategy);
 	}
 
 	private JsonValue createJsonValue(final Object obj) {

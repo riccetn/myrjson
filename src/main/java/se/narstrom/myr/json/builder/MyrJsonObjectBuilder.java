@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonConfig.KeyStrategy;
+import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -16,15 +18,28 @@ import se.narstrom.myr.json.value.MyrJsonObject;
 public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	private final JsonProvider provider;
 
+	private final KeyStrategy keyStrategy;
+
 	private final Map<String, JsonValue> map = new LinkedHashMap<>();
 
-	public MyrJsonObjectBuilder(final JsonProvider provider) {
+	public MyrJsonObjectBuilder(final JsonProvider provider, final KeyStrategy keyStrategy) {
 		this.provider = provider;
+		this.keyStrategy = keyStrategy;
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final JsonValue value) {
-		map.put(Objects.requireNonNull(name), Objects.requireNonNull(value));
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(value);
+
+		switch (keyStrategy) {
+			case FIRST -> map.putIfAbsent(name, value);
+			case LAST -> map.put(name, value);
+			case NONE -> {
+				if (map.putIfAbsent(name, value) != null)
+					throw new JsonException("Duplicate key '" + name + "'");
+			}
+		}
 		return this;
 	}
 

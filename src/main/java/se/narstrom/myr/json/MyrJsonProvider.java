@@ -130,7 +130,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonBuilderFactory createBuilderFactory(final Map<String, ?> config) {
-		return new MyrJsonBuilderFactory(this);
+		return new MyrJsonBuilderFactory(this, config);
 	}
 
 	@Override
