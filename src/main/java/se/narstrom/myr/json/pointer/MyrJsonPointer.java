@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonException;
@@ -14,6 +15,8 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 public class MyrJsonPointer implements JsonPointer {
+	private static final Pattern PATTERN_INDEX = Pattern.compile("(0|[1-9][0-9]*)");
+
 	private final List<String> path;
 
 	public MyrJsonPointer(final String pointer) {
@@ -49,8 +52,27 @@ public class MyrJsonPointer implements JsonPointer {
 		Objects.requireNonNull(target);
 		final JsonValue value = resolve(target);
 		if (value == null)
-			throw new JsonException("No such value");
+			throw new JsonException("Path: cannot find " + this + " in " + target);
 		return value;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+
+		for (final String key : path) {
+			sb.append('/');
+			for (int i = 0; i < key.length(); ++i) {
+				final char ch = key.charAt(i);
+				switch (ch) {
+					case '~' -> sb.append("~0");
+					case '/' -> sb.append("~1");
+					default -> sb.append(ch);
+				}
+			}
+		}
+
+		return sb.toString();
 	}
 
 	private JsonValue resolve(final JsonStructure target) {
@@ -58,6 +80,8 @@ public class MyrJsonPointer implements JsonPointer {
 		for (final String key : path) {
 			if (val.getValueType() == ValueType.ARRAY) {
 				final JsonArray array = (JsonArray) val;
+				if (!PATTERN_INDEX.matcher(key).matches())
+					return null;
 				final int index = Integer.parseInt(key);
 				if (index < 0 || index >= array.size())
 					return null;
