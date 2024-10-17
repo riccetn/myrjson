@@ -14,27 +14,26 @@ import jakarta.json.stream.JsonGenerator;
 public final class MyrJsonWriter implements JsonWriter {
 	private final JsonGenerator generator;
 
+	private boolean written;
+
 	public MyrJsonWriter(final JsonGenerator generator) {
 		this.generator = generator;
 	}
 
 	@Override
 	public void writeArray(final JsonArray array) {
-		generator.writeStartArray();
-		for (final JsonValue value : array) {
-			write(value);
-		}
-		generator.writeEnd();
+		if (written)
+			throw new IllegalStateException();
+		written = true;
+		writeArrayInternal(array);
 	}
 
 	@Override
 	public void writeObject(final JsonObject object) {
-		generator.writeStartObject();
-		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
-			generator.writeKey(entry.getKey());
-			write(entry.getValue());
-		}
-		generator.writeEnd();
+		if (written)
+			throw new IllegalStateException();
+		written = true;
+		writeObjectInternal(object);
 	}
 
 	@Override
@@ -44,15 +43,10 @@ public final class MyrJsonWriter implements JsonWriter {
 
 	@Override
 	public void write(final JsonValue value) {
-		switch (value.getValueType()) {
-			case ARRAY -> writeArray((JsonArray) value);
-			case OBJECT -> writeObject((JsonObject) value);
-			case STRING -> generator.write(((JsonString) value).getString());
-			case NUMBER -> generator.write(((JsonNumber) value).bigDecimalValue());
-			case TRUE -> generator.write(true);
-			case FALSE -> generator.write(false);
-			case NULL -> generator.writeNull();
-		}
+		if (written)
+			throw new IllegalStateException();
+		written = true;
+		writeInternal(value);
 	}
 
 	@Override
@@ -60,4 +54,32 @@ public final class MyrJsonWriter implements JsonWriter {
 		generator.close();
 	}
 
+	private void writeArrayInternal(final JsonArray array) {
+		generator.writeStartArray();
+		for (final JsonValue value : array) {
+			writeInternal(value);
+		}
+		generator.writeEnd();
+	}
+
+	private void writeObjectInternal(final JsonObject object) {
+		generator.writeStartObject();
+		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
+			generator.writeKey(entry.getKey());
+			writeInternal(entry.getValue());
+		}
+		generator.writeEnd();
+	}
+
+	private void writeInternal(final JsonValue value) {
+		switch (value.getValueType()) {
+			case ARRAY -> writeArrayInternal((JsonArray) value);
+			case OBJECT -> writeObjectInternal((JsonObject) value);
+			case STRING -> generator.write(((JsonString) value).getString());
+			case NUMBER -> generator.write(((JsonNumber) value).bigDecimalValue());
+			case TRUE -> generator.write(true);
+			case FALSE -> generator.write(false);
+			case NULL -> generator.writeNull();
+		}
+	}
 }
