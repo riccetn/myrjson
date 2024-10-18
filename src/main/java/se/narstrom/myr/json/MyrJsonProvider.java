@@ -140,10 +140,15 @@ public final class MyrJsonProvider extends JsonProvider {
 	public JsonPointer createPointer(final String pointer) {
 		return new MyrJsonPointer(pointer);
 	}
-	
+
 	@Override
 	public JsonMergePatch createMergePatch(final JsonValue patch) {
 		return new MyrJsonMergePatch(patch, createBuilderFactory(Map.of()));
+	}
+
+	@Override
+	public JsonMergePatch createMergeDiff(final JsonValue source, final JsonValue target) {
+		return new MyrJsonMergePatch(source, target, createBuilderFactory(Map.of()));
 	}
 
 	@Override
