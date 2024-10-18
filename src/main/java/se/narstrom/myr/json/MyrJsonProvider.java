@@ -13,6 +13,7 @@ import java.util.Objects;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -20,6 +21,7 @@ import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonString;
+import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.spi.JsonProvider;
@@ -32,7 +34,8 @@ import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
-import se.narstrom.myr.json.pointer.MyrJsonPointer;
+import se.narstrom.myr.json.patch.MyrJsonMergePatch;
+import se.narstrom.myr.json.patch.MyrJsonPointer;
 import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
@@ -136,6 +139,11 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonPointer createPointer(final String pointer) {
 		return new MyrJsonPointer(pointer);
+	}
+	
+	@Override
+	public JsonMergePatch createMergePatch(final JsonValue patch) {
+		return new MyrJsonMergePatch(patch, createBuilderFactory(Map.of()));
 	}
 
 	@Override

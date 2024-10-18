@@ -1,4 +1,4 @@
-package se.narstrom.myr.json.pointer;
+package se.narstrom.myr.json.patch;
 
 import java.util.ArrayList;
 import java.util.Collections;
