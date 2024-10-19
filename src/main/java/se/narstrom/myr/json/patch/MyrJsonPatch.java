@@ -16,12 +16,12 @@ import jakarta.json.spi.JsonProvider;
 
 public final class MyrJsonPatch implements JsonPatch {
 	private final JsonProvider provider;
-	
-	private final JsonBuilderFactory builderFactory;
-	
-	private final List<Operation> operations;
 
-	private MyrJsonPatch(final List<Operation> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
+	private final JsonBuilderFactory builderFactory;
+
+	private final List<OperationData> operations;
+
+	private MyrJsonPatch(final List<OperationData> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
 		this.operations = operations;
 		this.provider = provider;
 		this.builderFactory = builderFactory;
@@ -44,27 +44,26 @@ public final class MyrJsonPatch implements JsonPatch {
 
 	@Override
 	public JsonArray toJsonArray() {
-		return operations.stream().map(op -> objectFromOperation(op, provider, builderFactory))
-				.collect(Collector.of(builderFactory::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add, b -> b.build()));
+		return operations.stream().map(op -> objectFromOperation(op, provider, builderFactory)).collect(Collector.of(builderFactory::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add, b -> b.build()));
 	}
 
-	private static Operation operationFromObject(final JsonObject object, final JsonProvider provider) {
-		final OperationType type = OperationType.valueOf(object.getString("op").toUpperCase());
+	private static OperationData operationFromObject(final JsonObject object, final JsonProvider provider) {
+		final Operation op = Operation.fromOperationName(object.getString("op"));
 		final JsonPointer path = provider.createPointer(object.getString("path"));
-		final JsonValue value = switch (type) {
+		final JsonValue value = switch (op) {
 			case REMOVE -> null;
 			default -> object.get("value");
 		};
-		final JsonPointer from = switch (type) {
+		final JsonPointer from = switch (op) {
 			case MOVE, COPY -> provider.createPointer(object.getString("from"));
 			default -> null;
 		};
-		return new Operation(type, path, value, from);
+		return new OperationData(op, path, value, from);
 	}
 
-	private static JsonObject objectFromOperation(final Operation operation, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
+	private static JsonObject objectFromOperation(final OperationData operation, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
 		final JsonObjectBuilder objectBuilder = builderFactory.createObjectBuilder();
-		objectBuilder.add("op", operation.type().name().toLowerCase());
+		objectBuilder.add("op", operation.op().operationName());
 		objectBuilder.add("path", operation.path().toString());
 		if (operation.value() != null)
 			objectBuilder.add("value", operation.value());
@@ -73,10 +72,6 @@ public final class MyrJsonPatch implements JsonPatch {
 		return objectBuilder.build();
 	}
 
-	private enum OperationType {
-		ADD, REMOVE, REPLACE, MOVE, COPY, TEST
-	}
-
-	private record Operation(OperationType type, JsonPointer path, JsonValue value, JsonPointer from) {
+	private record OperationData(Operation op, JsonPointer path, JsonValue value, JsonPointer from) {
 	}
 }
