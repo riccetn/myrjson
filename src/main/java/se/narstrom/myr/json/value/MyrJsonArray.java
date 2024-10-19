@@ -12,7 +12,7 @@ import jakarta.json.JsonValue;
 public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonArray {
 	private List<JsonValue> list;
 
-	public MyrJsonArray(final List<JsonValue> list) {
+	MyrJsonArray(final List<JsonValue> list) {
 		this.list = List.copyOf(list);
 	}
 

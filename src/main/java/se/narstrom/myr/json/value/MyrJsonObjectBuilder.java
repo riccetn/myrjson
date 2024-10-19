@@ -1,4 +1,4 @@
-package se.narstrom.myr.json.builder;
+package se.narstrom.myr.json.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,7 +13,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
-import se.narstrom.myr.json.value.MyrJsonObject;
 
 public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	private final JsonProvider provider;

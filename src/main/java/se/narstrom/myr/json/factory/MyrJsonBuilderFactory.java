@@ -12,8 +12,8 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
-import se.narstrom.myr.json.builder.MyrJsonArrayBuilder;
-import se.narstrom.myr.json.builder.MyrJsonObjectBuilder;
+import se.narstrom.myr.json.value.MyrJsonArrayBuilder;
+import se.narstrom.myr.json.value.MyrJsonObjectBuilder;
 
 public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 

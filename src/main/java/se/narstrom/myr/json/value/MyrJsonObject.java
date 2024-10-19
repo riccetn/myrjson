@@ -16,7 +16,7 @@ import jakarta.json.JsonValue;
 public final class MyrJsonObject extends AbstractMap<String, JsonValue> implements JsonObject {
 	private final Map<String, JsonValue> map;
 
-	public MyrJsonObject(final Map<String, JsonValue> map) {
+	MyrJsonObject(final Map<String, JsonValue> map) {
 		this.map = Collections.unmodifiableMap(new LinkedHashMap<>(map));
 	}
 
