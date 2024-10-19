@@ -21,7 +21,7 @@ public final class MyrJsonPatch implements JsonPatch {
 
 	private final List<OperationData> operations;
 
-	private MyrJsonPatch(final List<OperationData> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
+	MyrJsonPatch(final List<OperationData> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
 		this.operations = operations;
 		this.provider = provider;
 		this.builderFactory = builderFactory;
@@ -72,6 +72,6 @@ public final class MyrJsonPatch implements JsonPatch {
 		return objectBuilder.build();
 	}
 
-	private record OperationData(Operation op, JsonPointer path, JsonValue value, JsonPointer from) {
+	record OperationData(Operation op, JsonPointer path, JsonValue value, JsonPointer from) {
 	}
 }

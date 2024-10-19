@@ -18,6 +18,7 @@ import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonPatch;
+import jakarta.json.JsonPatchBuilder;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
@@ -37,6 +38,7 @@ import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
 import se.narstrom.myr.json.patch.MyrJsonPatch;
+import se.narstrom.myr.json.patch.MyrJsonPatchBuilder;
 import se.narstrom.myr.json.patch.MyrJsonMergePatch;
 import se.narstrom.myr.json.patch.MyrJsonPointer;
 import se.narstrom.myr.json.value.MyrJsonNumber;
@@ -114,6 +116,11 @@ public final class MyrJsonProvider extends JsonProvider {
 		@SuppressWarnings("unchecked")
 		final Map<String, Object> fixedConfig = (Map<String, Object>) config;
 		return createBuilderFactory(Map.of()).createObjectBuilder(fixedConfig);
+	}
+
+	@Override
+	public JsonPatchBuilder createPatchBuilder() {
+		return new MyrJsonPatchBuilder(this, createBuilderFactory(Map.of()));
 	}
 
 	@Override
