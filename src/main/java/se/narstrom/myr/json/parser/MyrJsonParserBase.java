@@ -74,6 +74,9 @@ public abstract class MyrJsonParserBase implements JsonParser {
 			switch (ev) {
 				case START_ARRAY -> ++nested;
 				case END_ARRAY -> --nested;
+				default -> {
+					/* Nothing */
+				}
 			}
 		}
 	}
@@ -119,6 +122,9 @@ public abstract class MyrJsonParserBase implements JsonParser {
 			switch (ev) {
 				case START_OBJECT -> ++nested;
 				case END_OBJECT -> --nested;
+				default -> {
+					/* Nothing */
+				}
 			}
 		}
 	}

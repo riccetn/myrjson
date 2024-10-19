@@ -23,7 +23,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	public MyrJsonBuilderFactory(final JsonProvider provider, final Map<String, ?> config) {
 		this.provider = provider;
-		this.keyStrategy = ((Map<String, KeyStrategy>) config).get(JsonConfig.KEY_STRATEGY);
+		this.keyStrategy = (KeyStrategy) config.get(JsonConfig.KEY_STRATEGY);
 	}
 
 	@Override

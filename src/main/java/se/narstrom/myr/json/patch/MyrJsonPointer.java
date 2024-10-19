@@ -14,7 +14,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class MyrJsonPointer implements JsonPointer {
+public final class MyrJsonPointer implements JsonPointer {
 	private static final Pattern PATTERN_INDEX = Pattern.compile("(0|[1-9][0-9]*)");
 
 	private final List<String> path;

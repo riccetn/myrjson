@@ -110,8 +110,10 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
-	public JsonObjectBuilder createObjectBuilder(final Map<String, ?> map) {
-		return createBuilderFactory(Map.of()).createObjectBuilder((Map<String, Object>) map);
+	public JsonObjectBuilder createObjectBuilder(final Map<String, ?> config) {
+		@SuppressWarnings("unchecked")
+		final Map<String, Object> fixedConfig = (Map<String, Object>) config;
+		return createBuilderFactory(Map.of()).createObjectBuilder(fixedConfig);
 	}
 
 	@Override

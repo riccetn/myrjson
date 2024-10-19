@@ -14,7 +14,7 @@ import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 
-public class MyrJsonPatch implements JsonPatch {
+public final class MyrJsonPatch implements JsonPatch {
 	private final JsonProvider provider;
 	
 	private final JsonBuilderFactory builderFactory;

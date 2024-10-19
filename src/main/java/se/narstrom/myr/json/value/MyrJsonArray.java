@@ -47,6 +47,7 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends JsonValue> List<T> getValuesAs(final Class<T> clazz) {
 		return (List<T>) list;
 	}
