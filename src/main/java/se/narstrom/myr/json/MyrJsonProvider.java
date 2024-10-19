@@ -17,10 +17,12 @@ import jakarta.json.JsonMergePatch;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonPatch;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonString;
+import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
@@ -34,6 +36,7 @@ import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
+import se.narstrom.myr.json.patch.MyrJsonPatch;
 import se.narstrom.myr.json.patch.MyrJsonMergePatch;
 import se.narstrom.myr.json.patch.MyrJsonPointer;
 import se.narstrom.myr.json.value.MyrJsonNumber;
@@ -59,6 +62,11 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonBuilderFactory createBuilderFactory(final Map<String, ?> config) {
 		return new MyrJsonBuilderFactory(this, (config != null) ? config : Map.of());
+	}
+
+	@Override
+	public JsonPatch createDiff(final JsonStructure source, final JsonStructure target) {
+		return new MyrJsonPatch(source, target, this, createBuilderFactory(Map.of()));
 	}
 
 	@Override
