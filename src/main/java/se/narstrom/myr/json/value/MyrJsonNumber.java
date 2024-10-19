@@ -13,33 +13,8 @@ public final class MyrJsonNumber implements JsonNumber {
 	}
 
 	@Override
-	public ValueType getValueType() {
-		return ValueType.NUMBER;
-	}
-
-	@Override
-	public boolean isIntegral() {
-		return value.scale() == 0;
-	}
-
-	@Override
-	public int intValue() {
-		return value.intValue();
-	}
-
-	@Override
-	public int intValueExact() {
-		return value.intValueExact();
-	}
-
-	@Override
-	public long longValue() {
-		return value.longValue();
-	}
-
-	@Override
-	public long longValueExact() {
-		return value.longValueExact();
+	public BigDecimal bigDecimalValue() {
+		return value;
 	}
 
 	@Override
@@ -58,18 +33,43 @@ public final class MyrJsonNumber implements JsonNumber {
 	}
 
 	@Override
-	public BigDecimal bigDecimalValue() {
-		return value;
-	}
-
-	@Override
 	public boolean equals(final Object otherObject) {
 		return (otherObject instanceof JsonNumber other) && this.value.compareTo(other.bigDecimalValue()) == 0;
 	}
 
 	@Override
+	public ValueType getValueType() {
+		return ValueType.NUMBER;
+	}
+
+	@Override
 	public int hashCode() {
 		return value.hashCode();
+	}
+
+	@Override
+	public int intValue() {
+		return value.intValue();
+	}
+
+	@Override
+	public int intValueExact() {
+		return value.intValueExact();
+	}
+
+	@Override
+	public boolean isIntegral() {
+		return value.scale() == 0;
+	}
+
+	@Override
+	public long longValue() {
+		return value.longValue();
+	}
+
+	@Override
+	public long longValueExact() {
+		return value.longValueExact();
 	}
 
 	@Override

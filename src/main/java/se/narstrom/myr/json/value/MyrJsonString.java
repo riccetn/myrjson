@@ -12,13 +12,8 @@ public final class MyrJsonString implements JsonString {
 	}
 
 	@Override
-	public ValueType getValueType() {
-		return ValueType.STRING;
-	}
-
-	@Override
-	public String getString() {
-		return value;
+	public boolean equals(final Object otherObject) {
+		return (otherObject instanceof JsonString other) && Objects.equals(this.value, other.getString());
 	}
 
 	@Override
@@ -27,8 +22,13 @@ public final class MyrJsonString implements JsonString {
 	}
 
 	@Override
-	public boolean equals(final Object otherObject) {
-		return (otherObject instanceof JsonString other) && Objects.equals(this.value, other.getString());
+	public String getString() {
+		return value;
+	}
+
+	@Override
+	public ValueType getValueType() {
+		return ValueType.STRING;
 	}
 
 	@Override

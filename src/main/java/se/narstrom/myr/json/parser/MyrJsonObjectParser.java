@@ -29,28 +29,8 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 	}
 
 	@Override
-	public boolean hasNext() {
-		return state != State.END;
-	}
-
-	@Override
-	public String getString() {
-		return switch (state) {
-			case KEY -> entry.getKey();
-			case VALUE -> getStringValue();
-			default -> throw new IllegalStateException();
-		};
-	}
-
-	private String getStringValue() {
-		if (subParser != null)
-			return subParser.getString();
-
-		final JsonValue value = entry.getValue();
-		if (value.getValueType() != ValueType.STRING)
-			throw new IllegalStateException();
-
-		return ((JsonString) value).getString();
+	public void close() {
+		/* Nothing */
 	}
 
 	@Override
@@ -74,8 +54,17 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 	}
 
 	@Override
-	public void close() {
-		/* Nothing */
+	public String getString() {
+		return switch (state) {
+			case KEY -> entry.getKey();
+			case VALUE -> getStringValue();
+			default -> throw new IllegalStateException();
+		};
+	}
+
+	@Override
+	public boolean hasNext() {
+		return state != State.END;
 	}
 
 	@Override
@@ -89,34 +78,20 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 		};
 	}
 
-	@Override
-	protected boolean isInArray() {
+	private String getStringValue() {
 		if (subParser != null)
-			return subParser.isInArray();
-		return false;
-	}
+			return subParser.getString();
 
-	@Override
-	protected boolean isInObject() {
-		if (subParser != null)
-			return subParser.isInObject();
-		return true;
+		final JsonValue value = entry.getValue();
+		if (value.getValueType() != ValueType.STRING)
+			throw new IllegalStateException();
+
+		return ((JsonString) value).getString();
 	}
 
 	private Event nextInit() {
 		state = State.START;
 		return Event.START_OBJECT;
-	}
-
-	private Event nextStart() {
-		if (iterator.hasNext()) {
-			entry = iterator.next();
-			state = State.KEY;
-			return Event.KEY_NAME;
-		} else {
-			state = State.END;
-			return Event.END_OBJECT;
-		}
 	}
 
 	private Event nextKey() {
@@ -140,6 +115,17 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 		};
 	}
 
+	private Event nextStart() {
+		if (iterator.hasNext()) {
+			entry = iterator.next();
+			state = State.KEY;
+			return Event.KEY_NAME;
+		} else {
+			state = State.END;
+			return Event.END_OBJECT;
+		}
+	}
+
 	private Event nextValue() {
 		if (subParser != null && subParser.hasNext())
 			return subParser.next();
@@ -155,6 +141,20 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 
 		state = State.END;
 		return Event.END_OBJECT;
+	}
+
+	@Override
+	protected boolean isInArray() {
+		if (subParser != null)
+			return subParser.isInArray();
+		return false;
+	}
+
+	@Override
+	protected boolean isInObject() {
+		if (subParser != null)
+			return subParser.isInObject();
+		return true;
 	}
 
 	private enum State {

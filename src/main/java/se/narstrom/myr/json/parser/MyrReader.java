@@ -25,6 +25,17 @@ public final class MyrReader extends FilterReader {
 		super(in);
 	}
 
+	public JsonLocation getLocation() {
+		return new MyrJsonLocation(lineNo, columnNo, offset);
+	}
+
+	public int peekChar() throws IOException {
+		maybeFillBuffer();
+		if (buflen == -1)
+			return -1;
+		return buf[bufp];
+	}
+
 	@Override
 	public int read() throws IOException {
 		maybeFillBuffer();
@@ -41,20 +52,6 @@ public final class MyrReader extends FilterReader {
 		++offset;
 
 		return ch;
-	}
-
-	public char readChar() throws IOException {
-		int ch = read();
-		if (ch == -1)
-			throw new EOFException();
-		return (char) ch;
-	}
-
-	public int peekChar() throws IOException {
-		maybeFillBuffer();
-		if (buflen == -1)
-			return -1;
-		return buf[bufp];
 	}
 
 	@Override
@@ -79,6 +76,13 @@ public final class MyrReader extends FilterReader {
 		offset += realLen;
 
 		return realLen;
+	}
+
+	public char readChar() throws IOException {
+		int ch = read();
+		if (ch == -1)
+			throw new EOFException();
+		return (char) ch;
 	}
 
 	public void readChars(final char[] chs) throws IOException {
@@ -112,10 +116,6 @@ public final class MyrReader extends FilterReader {
 				++bufp;
 			}
 		}
-	}
-
-	public JsonLocation getLocation() {
-		return new MyrJsonLocation(lineNo, columnNo, offset);
 	}
 
 	private void maybeFillBuffer() throws IOException {

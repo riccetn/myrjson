@@ -30,18 +30,6 @@ public final class MyrJsonPointer implements JsonPointer {
 	}
 
 	@Override
-	public <T extends JsonStructure> T remove(final T target) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends JsonStructure> T replace(final T target, final JsonValue value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean containsValue(final JsonStructure target) {
 		Objects.requireNonNull(target);
 		return resolve(target) != null;
@@ -54,6 +42,18 @@ public final class MyrJsonPointer implements JsonPointer {
 		if (value == null)
 			throw new JsonException("Path: cannot find " + this + " in " + target);
 		return value;
+	}
+
+	@Override
+	public <T extends JsonStructure> T remove(final T target) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends JsonStructure> T replace(final T target, final JsonValue value) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

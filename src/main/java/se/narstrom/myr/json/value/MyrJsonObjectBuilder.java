@@ -27,6 +27,41 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	}
 
 	@Override
+	public JsonObjectBuilder add(final String name, final BigDecimal value) {
+		return add(name, provider.createValue(value));
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final BigInteger value) {
+		return add(name, provider.createValue(value));
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final boolean value) {
+		return add(name, value ? JsonValue.TRUE : JsonValue.FALSE);
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final double value) {
+		return add(name, provider.createValue(value));
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final int value) {
+		return add(name, provider.createValue(value));
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final JsonArrayBuilder builder) {
+		return add(name, builder.build());
+	}
+
+	@Override
+	public JsonObjectBuilder add(final String name, final JsonObjectBuilder builder) {
+		return add(name, builder.build());
+	}
+
+	@Override
 	public JsonObjectBuilder add(final String name, final JsonValue value) {
 		Objects.requireNonNull(name);
 		Objects.requireNonNull(value);
@@ -43,53 +78,13 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	}
 
 	@Override
-	public JsonObjectBuilder add(final String name, final String value) {
-		return add(name, provider.createValue(value));
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final BigInteger value) {
-		return add(name, provider.createValue(value));
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final BigDecimal value) {
-		return add(name, provider.createValue(value));
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final int value) {
-		return add(name, provider.createValue(value));
-	}
-
-	@Override
 	public JsonObjectBuilder add(final String name, final long value) {
 		return add(name, provider.createValue(value));
 	}
 
 	@Override
-	public JsonObjectBuilder add(final String name, final double value) {
+	public JsonObjectBuilder add(final String name, final String value) {
 		return add(name, provider.createValue(value));
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final boolean value) {
-		return add(name, value ? JsonValue.TRUE : JsonValue.FALSE);
-	}
-
-	@Override
-	public JsonObjectBuilder addNull(final String name) {
-		return add(name, JsonValue.NULL);
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final JsonObjectBuilder builder) {
-		return add(name, builder.build());
-	}
-
-	@Override
-	public JsonObjectBuilder add(final String name, final JsonArrayBuilder builder) {
-		return add(name, builder.build());
 	}
 
 	@Override
@@ -101,9 +96,8 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	}
 
 	@Override
-	public JsonObjectBuilder remove(final String name) {
-		map.remove(Objects.requireNonNull(name));
-		return this;
+	public JsonObjectBuilder addNull(final String name) {
+		return add(name, JsonValue.NULL);
 	}
 
 	@Override
@@ -111,6 +105,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 		final JsonObject obj = new MyrJsonObject(map);
 		map.clear();
 		return obj;
+	}
+
+	@Override
+	public JsonObjectBuilder remove(final String name) {
+		map.remove(Objects.requireNonNull(name));
+		return this;
 	}
 
 }

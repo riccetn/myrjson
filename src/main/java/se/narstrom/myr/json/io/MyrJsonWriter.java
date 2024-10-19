@@ -21,19 +21,8 @@ public final class MyrJsonWriter implements JsonWriter {
 	}
 
 	@Override
-	public void writeArray(final JsonArray array) {
-		if (written)
-			throw new IllegalStateException();
-		written = true;
-		writeArrayInternal(array);
-	}
-
-	@Override
-	public void writeObject(final JsonObject object) {
-		if (written)
-			throw new IllegalStateException();
-		written = true;
-		writeObjectInternal(object);
+	public void close() {
+		generator.close();
 	}
 
 	@Override
@@ -50,23 +39,25 @@ public final class MyrJsonWriter implements JsonWriter {
 	}
 
 	@Override
-	public void close() {
-		generator.close();
+	public void writeArray(final JsonArray array) {
+		if (written)
+			throw new IllegalStateException();
+		written = true;
+		writeArrayInternal(array);
+	}
+
+	@Override
+	public void writeObject(final JsonObject object) {
+		if (written)
+			throw new IllegalStateException();
+		written = true;
+		writeObjectInternal(object);
 	}
 
 	private void writeArrayInternal(final JsonArray array) {
 		generator.writeStartArray();
 		for (final JsonValue value : array) {
 			writeInternal(value);
-		}
-		generator.writeEnd();
-	}
-
-	private void writeObjectInternal(final JsonObject object) {
-		generator.writeStartObject();
-		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
-			generator.writeKey(entry.getKey());
-			writeInternal(entry.getValue());
 		}
 		generator.writeEnd();
 	}
@@ -81,5 +72,14 @@ public final class MyrJsonWriter implements JsonWriter {
 			case FALSE -> generator.write(false);
 			case NULL -> generator.writeNull();
 		}
+	}
+
+	private void writeObjectInternal(final JsonObject object) {
+		generator.writeStartObject();
+		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
+			generator.writeKey(entry.getKey());
+			writeInternal(entry.getValue());
+		}
+		generator.writeEnd();
 	}
 }

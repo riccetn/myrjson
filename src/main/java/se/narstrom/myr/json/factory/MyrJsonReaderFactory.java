@@ -27,11 +27,6 @@ public final class MyrJsonReaderFactory implements JsonReaderFactory {
 	}
 
 	@Override
-	public JsonReader createReader(final Reader reader) {
-		return new MyrJsonReader(provider, builderFactory, parserFactory.createParser(reader));
-	}
-
-	@Override
 	public JsonReader createReader(final InputStream in) {
 		return new MyrJsonReader(provider, builderFactory, parserFactory.createParser(in));
 	}
@@ -42,8 +37,12 @@ public final class MyrJsonReaderFactory implements JsonReaderFactory {
 	}
 
 	@Override
+	public JsonReader createReader(final Reader reader) {
+		return new MyrJsonReader(provider, builderFactory, parserFactory.createParser(reader));
+	}
+
+	@Override
 	public Map<String, ?> getConfigInUse() {
-		
 		return parserFactory.getConfigInUse();
 	}
 }

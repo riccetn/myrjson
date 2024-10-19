@@ -17,65 +17,8 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 	}
 
 	@Override
-	public ValueType getValueType() {
-		return ValueType.ARRAY;
-	}
-
-	@Override
-	public int size() {
-		return list.size();
-	}
-
-	@Override
-	public JsonObject getJsonObject(final int index) {
-		return (JsonObject) list.get(index);
-	}
-
-	@Override
-	public JsonArray getJsonArray(final int index) {
-		return (JsonArray) list.get(index);
-	}
-
-	@Override
-	public JsonNumber getJsonNumber(final int index) {
-		return (JsonNumber) list.get(index);
-	}
-
-	@Override
-	public JsonString getJsonString(final int index) {
-		return (JsonString) list.get(index);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T extends JsonValue> List<T> getValuesAs(final Class<T> clazz) {
-		return (List<T>) list;
-	}
-
-	@Override
-	public String getString(final int index) {
-		return getJsonString(index).getString();
-	}
-
-	@Override
-	public String getString(final int index, final String defaultValue) {
-		final JsonValue value = list.get(index);
-		if (value == null || value.getValueType() != ValueType.STRING)
-			return defaultValue;
-		return ((JsonString) value).getString();
-	}
-
-	@Override
-	public int getInt(final int index) {
-		return getJsonNumber(index).intValue();
-	}
-
-	@Override
-	public int getInt(final int index, final int defaultValue) {
-		final JsonValue value = list.get(index);
-		if (value == null || value.getValueType() != ValueType.NUMBER)
-			return defaultValue;
-		return ((JsonNumber) value).intValue();
+	public JsonValue get(final int index) {
+		return list.get(index);
 	}
 
 	@Override
@@ -101,12 +44,69 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 	}
 
 	@Override
+	public int getInt(final int index) {
+		return getJsonNumber(index).intValue();
+	}
+
+	@Override
+	public int getInt(final int index, final int defaultValue) {
+		final JsonValue value = list.get(index);
+		if (value == null || value.getValueType() != ValueType.NUMBER)
+			return defaultValue;
+		return ((JsonNumber) value).intValue();
+	}
+
+	@Override
+	public JsonArray getJsonArray(final int index) {
+		return (JsonArray) list.get(index);
+	}
+
+	@Override
+	public JsonNumber getJsonNumber(final int index) {
+		return (JsonNumber) list.get(index);
+	}
+
+	@Override
+	public JsonObject getJsonObject(final int index) {
+		return (JsonObject) list.get(index);
+	}
+
+	@Override
+	public JsonString getJsonString(final int index) {
+		return (JsonString) list.get(index);
+	}
+
+	@Override
+	public String getString(final int index) {
+		return getJsonString(index).getString();
+	}
+
+	@Override
+	public String getString(final int index, final String defaultValue) {
+		final JsonValue value = list.get(index);
+		if (value == null || value.getValueType() != ValueType.STRING)
+			return defaultValue;
+		return ((JsonString) value).getString();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends JsonValue> List<T> getValuesAs(final Class<T> clazz) {
+		return (List<T>) list;
+	}
+
+	@Override
+	public ValueType getValueType() {
+		return ValueType.ARRAY;
+	}
+
+	@Override
 	public boolean isNull(final int index) {
 		return list.get(index) == JsonValue.NULL;
 	}
 
 	@Override
-	public JsonValue get(final int index) {
-		return list.get(index);
+	public int size() {
+		return list.size();
 	}
 }

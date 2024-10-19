@@ -19,11 +19,6 @@ public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
 	}
 
 	@Override
-	public JsonGenerator createGenerator(final Writer writer) {
-		return new MyrJsonGenerator(writer);
-	}
-
-	@Override
 	public JsonGenerator createGenerator(final OutputStream out) {
 		return createGenerator(new OutputStreamWriter(out, StandardCharsets.UTF_8));
 	}
@@ -31,6 +26,11 @@ public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
 	@Override
 	public JsonGenerator createGenerator(final OutputStream out, final Charset charset) {
 		return createGenerator(new OutputStreamWriter(out, charset));
+	}
+
+	@Override
+	public JsonGenerator createGenerator(final Writer writer) {
+		return new MyrJsonGenerator(writer);
 	}
 
 	@Override

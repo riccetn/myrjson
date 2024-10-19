@@ -24,12 +24,6 @@ public final class MyrJsonPatch implements JsonPatch {
 
 	private final List<OperationData> operations;
 
-	MyrJsonPatch(final List<OperationData> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
-		this.operations = operations;
-		this.provider = provider;
-		this.builderFactory = builderFactory;
-	}
-
 	public MyrJsonPatch(final JsonArray json, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
 		this(json.stream().map(val -> operationFromObject((JsonObject) val, provider)).toList(), provider, builderFactory);
 	}
@@ -37,6 +31,12 @@ public final class MyrJsonPatch implements JsonPatch {
 	public MyrJsonPatch(final JsonStructure source, final JsonStructure target, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
 		// TODO Auto-generated constructor stub
 		this(List.of(), provider, builderFactory);
+	}
+
+	MyrJsonPatch(final List<OperationData> operations, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
+		this.operations = operations;
+		this.provider = provider;
+		this.builderFactory = builderFactory;
 	}
 
 	@Override
@@ -70,6 +70,17 @@ public final class MyrJsonPatch implements JsonPatch {
 		return operations.stream().map(op -> objectFromOperation(op, provider, builderFactory)).collect(Collector.of(builderFactory::createArrayBuilder, JsonArrayBuilder::add, JsonArrayBuilder::add, b -> b.build()));
 	}
 
+	private static JsonObject objectFromOperation(final OperationData operation, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
+		final JsonObjectBuilder objectBuilder = builderFactory.createObjectBuilder();
+		objectBuilder.add("op", operation.op().operationName());
+		objectBuilder.add("path", operation.path().toString());
+		if (operation.value() != null)
+			objectBuilder.add("value", operation.value());
+		if (operation.from() != null)
+			objectBuilder.add("from", operation.from().toString());
+		return objectBuilder.build();
+	}
+
 	private static OperationData operationFromObject(final JsonObject object, final JsonProvider provider) {
 		final Operation op = Operation.fromOperationName(object.getString("op"));
 		final JsonPointer path = provider.createPointer(object.getString("path"));
@@ -82,17 +93,6 @@ public final class MyrJsonPatch implements JsonPatch {
 			default -> null;
 		};
 		return new OperationData(op, path, value, from);
-	}
-
-	private static JsonObject objectFromOperation(final OperationData operation, final JsonProvider provider, final JsonBuilderFactory builderFactory) {
-		final JsonObjectBuilder objectBuilder = builderFactory.createObjectBuilder();
-		objectBuilder.add("op", operation.op().operationName());
-		objectBuilder.add("path", operation.path().toString());
-		if (operation.value() != null)
-			objectBuilder.add("value", operation.value());
-		if (operation.from() != null)
-			objectBuilder.add("from", operation.from().toString());
-		return objectBuilder.build();
 	}
 
 	record OperationData(Operation op, JsonPointer path, JsonValue value, JsonPointer from) {

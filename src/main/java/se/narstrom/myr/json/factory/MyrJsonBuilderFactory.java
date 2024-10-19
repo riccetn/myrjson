@@ -27,29 +27,6 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 	}
 
 	@Override
-	public JsonObjectBuilder createObjectBuilder() {
-		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.LAST);
-	}
-
-	@Override
-	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
-		final JsonObjectBuilder builder = createObjectBuilder();
-		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
-			builder.add(entry.getKey(), entry.getValue());
-		}
-		return builder;
-	}
-
-	@Override
-	public JsonObjectBuilder createObjectBuilder(final Map<String, Object> map) {
-		final JsonObjectBuilder builder = createObjectBuilder();
-		for (final Map.Entry<String, Object> entry : map.entrySet()) {
-			builder.add(entry.getKey(), createJsonValue(entry.getValue()));
-		}
-		return builder;
-	}
-
-	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return new MyrJsonArrayBuilder(provider);
 	}
@@ -69,6 +46,29 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 		final JsonArrayBuilder builder = createArrayBuilder();
 		for (final JsonValue value : array) {
 			builder.add(value);
+		}
+		return builder;
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder() {
+		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.LAST);
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
+		final JsonObjectBuilder builder = createObjectBuilder();
+		for (final Map.Entry<String, JsonValue> entry : object.entrySet()) {
+			builder.add(entry.getKey(), entry.getValue());
+		}
+		return builder;
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final Map<String, Object> map) {
+		final JsonObjectBuilder builder = createObjectBuilder();
+		for (final Map.Entry<String, Object> entry : map.entrySet()) {
+			builder.add(entry.getKey(), createJsonValue(entry.getValue()));
 		}
 		return builder;
 	}

@@ -18,11 +18,6 @@ public final class MyrJsonWriterFactory implements JsonWriterFactory {
 	}
 
 	@Override
-	public JsonWriter createWriter(final Writer writer) {
-		return new MyrJsonWriter(generatorFactory.createGenerator(writer));
-	}
-
-	@Override
 	public JsonWriter createWriter(final OutputStream out) {
 		return new MyrJsonWriter(generatorFactory.createGenerator(out));
 	}
@@ -30,6 +25,11 @@ public final class MyrJsonWriterFactory implements JsonWriterFactory {
 	@Override
 	public JsonWriter createWriter(final OutputStream out, final Charset charset) {
 		return new MyrJsonWriter(generatorFactory.createGenerator(out, charset));
+	}
+
+	@Override
+	public JsonWriter createWriter(final Writer writer) {
+		return new MyrJsonWriter(generatorFactory.createGenerator(writer));
 	}
 
 	@Override

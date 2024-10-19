@@ -33,27 +33,11 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	@Override
-	public JsonObject readObject() {
-		if (closed || !parser.hasNext())
-			throw new IllegalStateException();
-
-		final JsonParser.Event event = parser.next();
-		if (event != JsonParser.Event.START_OBJECT)
-			throw new JsonException("Not an object");
-
-		return onStartObject();
-	}
-
-	@Override
-	public JsonArray readArray() {
-		if (closed || !parser.hasNext())
-			throw new IllegalStateException();
-
-		final JsonParser.Event event = parser.next();
-		if (event != JsonParser.Event.START_ARRAY)
-			throw new JsonException("Not an array");
-
-		return onStartArray();
+	public void close() {
+		if (closed)
+			return;
+		closed = true;
+		parser.close();
 	}
 
 	@Override
@@ -70,11 +54,27 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	@Override
-	public void close() {
-		if (closed)
-			return;
-		closed = true;
-		parser.close();
+	public JsonArray readArray() {
+		if (closed || !parser.hasNext())
+			throw new IllegalStateException();
+
+		final JsonParser.Event event = parser.next();
+		if (event != JsonParser.Event.START_ARRAY)
+			throw new JsonException("Not an array");
+
+		return onStartArray();
+	}
+
+	@Override
+	public JsonObject readObject() {
+		if (closed || !parser.hasNext())
+			throw new IllegalStateException();
+
+		final JsonParser.Event event = parser.next();
+		if (event != JsonParser.Event.START_OBJECT)
+			throw new JsonException("Not an object");
+
+		return onStartObject();
 	}
 
 	@Override
@@ -84,17 +84,14 @@ public final class MyrJsonReader implements JsonReader {
 		return readValue(parser.next());
 	}
 
-	private JsonValue readValue(final JsonParser.Event event) {
-		return switch (event) {
-			case START_OBJECT -> onStartObject();
-			case START_ARRAY -> onStartArray();
-			case VALUE_STRING -> provider.createValue(parser.getString());
-			case VALUE_NUMBER -> provider.createValue(parser.getBigDecimal());
-			case VALUE_TRUE -> JsonValue.TRUE;
-			case VALUE_FALSE -> JsonValue.FALSE;
-			case VALUE_NULL -> JsonValue.NULL;
-			default -> throw new JsonParsingException("Not a value, event: " + event, parser.getLocation());
-		};
+	private JsonArray onStartArray() {
+		final JsonArrayBuilder builder = builderFactory.createArrayBuilder();
+
+		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_ARRAY; event = parser.next()) {
+			builder.add(readValue(event));
+		}
+
+		return builder.build();
 	}
 
 	private JsonObject onStartObject() {
@@ -116,13 +113,16 @@ public final class MyrJsonReader implements JsonReader {
 		return builder.build();
 	}
 
-	private JsonArray onStartArray() {
-		final JsonArrayBuilder builder = builderFactory.createArrayBuilder();
-
-		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_ARRAY; event = parser.next()) {
-			builder.add(readValue(event));
-		}
-
-		return builder.build();
+	private JsonValue readValue(final JsonParser.Event event) {
+		return switch (event) {
+			case START_OBJECT -> onStartObject();
+			case START_ARRAY -> onStartArray();
+			case VALUE_STRING -> provider.createValue(parser.getString());
+			case VALUE_NUMBER -> provider.createValue(parser.getBigDecimal());
+			case VALUE_TRUE -> JsonValue.TRUE;
+			case VALUE_FALSE -> JsonValue.FALSE;
+			case VALUE_NULL -> JsonValue.NULL;
+			default -> throw new JsonParsingException("Not a value, event: " + event, parser.getLocation());
+		};
 	}
 }

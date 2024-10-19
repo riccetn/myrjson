@@ -28,21 +28,8 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 	}
 
 	@Override
-	public boolean hasNext() {
-		return state != State.END;
-	}
-
-	@Override
-	public String getString() {
-		if (state != State.VALUE)
-			throw new IllegalStateException();
-
-		if (subParser != null)
-			return subParser.getString();
-
-		if (value.getValueType() != ValueType.STRING)
-			throw new IllegalStateException();
-		return ((JsonString) value).getString();
+	public void close() {
+		/* Nothing */
 	}
 
 	@Override
@@ -64,8 +51,21 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 	}
 
 	@Override
-	public void close() {
-		/* Nothing */
+	public String getString() {
+		if (state != State.VALUE)
+			throw new IllegalStateException();
+
+		if (subParser != null)
+			return subParser.getString();
+
+		if (value.getValueType() != ValueType.STRING)
+			throw new IllegalStateException();
+		return ((JsonString) value).getString();
+	}
+
+	@Override
+	public boolean hasNext() {
+		return state != State.END;
 	}
 
 	@Override
@@ -76,20 +76,6 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 			case VALUE -> nextValue();
 			case END -> throw new NoSuchElementException();
 		};
-	}
-
-	@Override
-	protected boolean isInArray() {
-		if (subParser != null)
-			return subParser.isInArray();
-		return true;
-	}
-
-	@Override
-	protected boolean isInObject() {
-		if (subParser != null)
-			return subParser.isInObject();
-		return false;
 	}
 
 	private Event nextInit() {
@@ -141,6 +127,20 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 			case FALSE -> Event.VALUE_FALSE;
 			case NULL -> Event.VALUE_NULL;
 		};
+	}
+
+	@Override
+	protected boolean isInArray() {
+		if (subParser != null)
+			return subParser.isInArray();
+		return true;
+	}
+
+	@Override
+	protected boolean isInObject() {
+		if (subParser != null)
+			return subParser.isInObject();
+		return false;
 	}
 
 	private enum State {

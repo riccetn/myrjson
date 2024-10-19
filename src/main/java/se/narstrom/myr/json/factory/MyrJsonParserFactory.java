@@ -29,15 +29,6 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 	}
 
 	@Override
-	public JsonParser createParser(final Reader reader) {
-		try {
-			return new MyrJsonStreamParser(provider, new MyrReader(reader));
-		} catch (final IOException ex) {
-			throw new JsonParsingException(ex.getMessage(), ex, new MyrJsonLocation(-1, -1, -1));
-		}
-	}
-
-	@Override
 	public JsonParser createParser(final InputStream in) {
 		try {
 			final PushbackInputStream pbin = new PushbackInputStream(in, 4);
@@ -55,13 +46,22 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 	}
 
 	@Override
+	public JsonParser createParser(final JsonArray array) {
+		return new MyrJsonArrayParser(provider, array);
+	}
+
+	@Override
 	public JsonParser createParser(final JsonObject object) {
 		return new MyrJsonObjectParser(provider, object);
 	}
 
 	@Override
-	public JsonParser createParser(final JsonArray array) {
-		return new MyrJsonArrayParser(provider, array);
+	public JsonParser createParser(final Reader reader) {
+		try {
+			return new MyrJsonStreamParser(provider, new MyrReader(reader));
+		} catch (final IOException ex) {
+			throw new JsonParsingException(ex.getMessage(), ex, new MyrJsonLocation(-1, -1, -1));
+		}
 	}
 
 	@Override

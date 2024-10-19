@@ -25,21 +25,6 @@ public abstract class MyrJsonParserBase implements JsonParser {
 	}
 
 	@Override
-	public boolean isIntegralNumber() {
-		return getBigDecimal().scale() == 0;
-	}
-
-	@Override
-	public int getInt() {
-		return getBigDecimal().intValue();
-	}
-
-	@Override
-	public long getLong() {
-		return getBigDecimal().longValue();
-	}
-
-	@Override
 	public JsonArray getArray() {
 		if (currentEvent() != Event.START_ARRAY)
 			throw new IllegalStateException();
@@ -63,22 +48,13 @@ public abstract class MyrJsonParserBase implements JsonParser {
 	}
 
 	@Override
-	public void skipArray() {
-		if (!isInArray())
-			return;
+	public int getInt() {
+		return getBigDecimal().intValue();
+	}
 
-		int nested = 1;
-
-		while (nested > 0) {
-			final Event ev = next();
-			switch (ev) {
-				case START_ARRAY -> ++nested;
-				case END_ARRAY -> --nested;
-				default -> {
-					/* Nothing */
-				}
-			}
-		}
+	@Override
+	public long getLong() {
+		return getBigDecimal().longValue();
 	}
 
 	@Override
@@ -111,25 +87,6 @@ public abstract class MyrJsonParserBase implements JsonParser {
 	}
 
 	@Override
-	public void skipObject() {
-		if (!isInObject())
-			return;
-
-		int nested = 1;
-
-		while (nested > 0) {
-			final Event ev = next();
-			switch (ev) {
-				case START_OBJECT -> ++nested;
-				case END_OBJECT -> --nested;
-				default -> {
-					/* Nothing */
-				}
-			}
-		}
-	}
-
-	@Override
 	public JsonValue getValue() {
 		return switch (currentEvent()) {
 			case START_ARRAY -> getArray();
@@ -150,6 +107,49 @@ public abstract class MyrJsonParserBase implements JsonParser {
 
 		final Spliterator<JsonValue> split = new ValueSpliterator();
 		return StreamSupport.stream(split, false);
+	}
+
+	@Override
+	public boolean isIntegralNumber() {
+		return getBigDecimal().scale() == 0;
+	}
+
+	@Override
+	public void skipArray() {
+		if (!isInArray())
+			return;
+
+		int nested = 1;
+
+		while (nested > 0) {
+			final Event ev = next();
+			switch (ev) {
+				case START_ARRAY -> ++nested;
+				case END_ARRAY -> --nested;
+				default -> {
+					/* Nothing */
+				}
+			}
+		}
+	}
+
+	@Override
+	public void skipObject() {
+		if (!isInObject())
+			return;
+
+		int nested = 1;
+
+		while (nested > 0) {
+			final Event ev = next();
+			switch (ev) {
+				case START_OBJECT -> ++nested;
+				case END_OBJECT -> --nested;
+				default -> {
+					/* Nothing */
+				}
+			}
+		}
 	}
 
 	protected abstract boolean isInArray();
@@ -208,6 +208,16 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		boolean advanced = false;
 
 		@Override
+		public int characteristics() {
+			return ORDERED | SIZED;
+		}
+
+		@Override
+		public long estimateSize() {
+			return 1;
+		}
+
+		@Override
 		public boolean tryAdvance(final Consumer<? super JsonValue> action) {
 			if (advanced)
 				return false;
@@ -221,16 +231,6 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		@Override
 		public Spliterator<JsonValue> trySplit() {
 			return null;
-		}
-
-		@Override
-		public long estimateSize() {
-			return 1;
-		}
-
-		@Override
-		public int characteristics() {
-			return ORDERED | SIZED;
 		}
 	}
 }
