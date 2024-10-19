@@ -70,6 +70,11 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
+	public JsonPatch createPatch(final JsonArray array) {
+		return new MyrJsonPatch(array, this, createBuilderFactory(Map.of()));
+	}
+
+	@Override
 	public JsonGenerator createGenerator(final OutputStream out) {
 		return createGeneratorFactory(Map.of()).createGenerator(out);
 	}
