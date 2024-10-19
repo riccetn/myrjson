@@ -42,81 +42,6 @@ import se.narstrom.myr.json.value.MyrJsonString;
 public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
-	public JsonParser createParser(final Reader reader) {
-		return createParserFactory(Map.of()).createParser(reader);
-	}
-
-	@Override
-	public JsonParser createParser(final InputStream in) {
-		return createParserFactory(Map.of()).createParser(in);
-	}
-
-	@Override
-	public JsonParserFactory createParserFactory(final Map<String, ?> config) {
-		return new MyrJsonParserFactory(this);
-	}
-
-	@Override
-	public JsonGenerator createGenerator(final Writer writer) {
-		return createGeneratorFactory(Map.of()).createGenerator(writer);
-	}
-
-	@Override
-	public JsonGenerator createGenerator(final OutputStream out) {
-		return createGeneratorFactory(Map.of()).createGenerator(out);
-	}
-
-	@Override
-	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
-		return new MyrJsonGeneratorFactory(config);
-	}
-
-	@Override
-	public JsonReader createReader(final Reader reader) {
-		return createReaderFactory(Map.of()).createReader(reader);
-	}
-
-	@Override
-	public JsonReader createReader(final InputStream in) {
-		return createReaderFactory(Map.of()).createReader(in);
-	}
-
-	@Override
-	public JsonWriter createWriter(final Writer writer) {
-		return createWriterFactory(Map.of()).createWriter(writer);
-	}
-
-	@Override
-	public JsonWriter createWriter(final OutputStream out) {
-		return createWriterFactory(Map.of()).createWriter(out);
-	}
-
-	@Override
-	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
-		return new MyrJsonWriterFactory(createGeneratorFactory(config));
-	}
-
-	@Override
-	public JsonReaderFactory createReaderFactory(final Map<String, ?> config) {
-		return new MyrJsonReaderFactory(this, createBuilderFactory(config), createParserFactory(config));
-	}
-
-	@Override
-	public JsonObjectBuilder createObjectBuilder() {
-		return createBuilderFactory(Map.of()).createObjectBuilder();
-	}
-
-	@Override
-	public JsonObjectBuilder createObjectBuilder(final Map<String, ?> map) {
-		return createBuilderFactory(Map.of()).createObjectBuilder((Map<String, Object>) map);
-	}
-
-	@Override
-	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
-		return createBuilderFactory(Map.of()).createObjectBuilder(object);
-	}
-
-	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return createBuilderFactory(Map.of()).createArrayBuilder();
 	}
@@ -137,13 +62,18 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
-	public JsonPointer createPointer(final String pointer) {
-		return new MyrJsonPointer(pointer);
+	public JsonGenerator createGenerator(final OutputStream out) {
+		return createGeneratorFactory(Map.of()).createGenerator(out);
 	}
 
 	@Override
-	public JsonMergePatch createMergePatch(final JsonValue patch) {
-		return new MyrJsonMergePatch(patch, createBuilderFactory(Map.of()));
+	public JsonGenerator createGenerator(final Writer writer) {
+		return createGeneratorFactory(Map.of()).createGenerator(writer);
+	}
+
+	@Override
+	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
+		return new MyrJsonGeneratorFactory(config);
 	}
 
 	@Override
@@ -152,8 +82,58 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
-	public JsonString createValue(final String value) {
-		return new MyrJsonString(Objects.requireNonNull(value));
+	public JsonMergePatch createMergePatch(final JsonValue patch) {
+		return new MyrJsonMergePatch(patch, createBuilderFactory(Map.of()));
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder() {
+		return createBuilderFactory(Map.of()).createObjectBuilder();
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final JsonObject object) {
+		return createBuilderFactory(Map.of()).createObjectBuilder(object);
+	}
+
+	@Override
+	public JsonObjectBuilder createObjectBuilder(final Map<String, ?> map) {
+		return createBuilderFactory(Map.of()).createObjectBuilder((Map<String, Object>) map);
+	}
+
+	@Override
+	public JsonParser createParser(final InputStream in) {
+		return createParserFactory(Map.of()).createParser(in);
+	}
+
+	@Override
+	public JsonParser createParser(final Reader reader) {
+		return createParserFactory(Map.of()).createParser(reader);
+	}
+
+	@Override
+	public JsonParserFactory createParserFactory(final Map<String, ?> config) {
+		return new MyrJsonParserFactory(this);
+	}
+
+	@Override
+	public JsonPointer createPointer(final String pointer) {
+		return new MyrJsonPointer(pointer);
+	}
+
+	@Override
+	public JsonReader createReader(final InputStream in) {
+		return createReaderFactory(Map.of()).createReader(in);
+	}
+
+	@Override
+	public JsonReader createReader(final Reader reader) {
+		return createReaderFactory(Map.of()).createReader(reader);
+	}
+
+	@Override
+	public JsonReaderFactory createReaderFactory(final Map<String, ?> config) {
+		return new MyrJsonReaderFactory(this, createBuilderFactory(config), createParserFactory(config));
 	}
 
 	@Override
@@ -194,5 +174,25 @@ public final class MyrJsonProvider extends JsonProvider {
 			case BigDecimal num -> createValue(num);
 			default -> createValue(number.longValue());
 		};
+	}
+
+	@Override
+	public JsonString createValue(final String value) {
+		return new MyrJsonString(Objects.requireNonNull(value));
+	}
+
+	@Override
+	public JsonWriter createWriter(final OutputStream out) {
+		return createWriterFactory(Map.of()).createWriter(out);
+	}
+
+	@Override
+	public JsonWriter createWriter(final Writer writer) {
+		return createWriterFactory(Map.of()).createWriter(writer);
+	}
+
+	@Override
+	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
+		return new MyrJsonWriterFactory(createGeneratorFactory(config));
 	}
 }
