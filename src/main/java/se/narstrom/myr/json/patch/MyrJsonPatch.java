@@ -1,6 +1,7 @@
 package se.narstrom.myr.json.patch;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collector;
 
 import jakarta.json.JsonArray;
@@ -15,6 +16,8 @@ import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 
 public final class MyrJsonPatch implements JsonPatch {
+	private final Logger LOG = Logger.getLogger(MyrJsonPatch.class.getName());
+
 	private final JsonProvider provider;
 
 	private final JsonBuilderFactory builderFactory;
@@ -37,9 +40,29 @@ public final class MyrJsonPatch implements JsonPatch {
 	}
 
 	@Override
-	public <T extends JsonStructure> T apply(T target) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T extends JsonStructure> T apply(final T target) {
+		LOG.info("apply() target = " + target);
+		T t = target;
+		for (final OperationData op : operations) {
+			LOG.info("operation = " + op);
+			switch (op.op()) {
+				case ADD -> t = op.path().add(t, op.value());
+				case COPY -> t = op.path().add(t, op.from().getValue(t));
+				case MOVE -> {
+					final JsonValue newValue = op.from().getValue(t);
+					t = op.from().remove(t);
+					t = op.path().add(t, newValue);
+				}
+				case REMOVE -> t = op.path().remove(t);
+				case REPLACE -> t = op.path.replace(t, op.value());
+				case TEST -> {
+					// FIXME: Implement this
+				}
+			}
+			LOG.info("apply() target = " + t);
+		}
+
+		return t;
 	}
 
 	@Override
