@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -32,7 +31,6 @@ import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
-import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
 import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
@@ -41,8 +39,6 @@ import se.narstrom.myr.json.patch.MyrJsonPatch;
 import se.narstrom.myr.json.patch.MyrJsonPatchBuilder;
 import se.narstrom.myr.json.patch.MyrJsonMergePatch;
 import se.narstrom.myr.json.patch.MyrJsonPointer;
-import se.narstrom.myr.json.value.MyrJsonNumber;
-import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonProvider extends JsonProvider {
 
@@ -63,7 +59,10 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonBuilderFactory createBuilderFactory(final Map<String, ?> config) {
-		return new MyrJsonBuilderFactory(this, (config != null) ? config : Map.of());
+		if (config == null)
+			return defaultContext.createBuilderFactory();
+		else
+			return new MyrJsonContext(config).createBuilderFactory();
 	}
 
 	@Override
@@ -160,47 +159,37 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonNumber createValue(final BigDecimal value) {
-		return new MyrJsonNumber(Objects.requireNonNull(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
 	public JsonNumber createValue(final BigInteger value) {
-		return createValue(new BigDecimal(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
 	public JsonNumber createValue(final double value) {
-		return createValue(BigDecimal.valueOf(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
 	public JsonNumber createValue(int value) {
-		return createValue(BigDecimal.valueOf(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
 	public JsonNumber createValue(long value) {
-		return createValue(BigDecimal.valueOf(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
-	public JsonNumber createValue(final Number number) {
-		return switch (number) {
-			case Byte num -> createValue(num.intValue());
-			case Short num -> createValue(num.intValue());
-			case Integer num -> createValue(num.intValue());
-			case Long num -> createValue(num.longValue());
-			case Float num -> createValue(num.doubleValue());
-			case Double num -> createValue(num.doubleValue());
-			case BigInteger num -> createValue(num);
-			case BigDecimal num -> createValue(num);
-			default -> createValue(number.longValue());
-		};
+	public JsonNumber createValue(final Number value) {
+		return defaultContext.createValue(value);
 	}
 
 	@Override
 	public JsonString createValue(final String value) {
-		return new MyrJsonString(Objects.requireNonNull(value));
+		return defaultContext.createValue(value);
 	}
 
 	@Override
@@ -217,4 +206,6 @@ public final class MyrJsonProvider extends JsonProvider {
 	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
 		return new MyrJsonWriterFactory(createGeneratorFactory(config));
 	}
+
+	private MyrJsonContext defaultContext = new MyrJsonContext(Map.of());
 }

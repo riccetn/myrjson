@@ -10,27 +10,27 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
-	private final JsonProvider provider;
+	private final MyrJsonContext context;
 
 	private final List<JsonValue> list = new ArrayList<>();
 
-	public MyrJsonArrayBuilder(final JsonProvider provider) {
-		this.provider = provider;
+	public MyrJsonArrayBuilder(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
 	public JsonArrayBuilder add(final BigDecimal value) {
 		Objects.requireNonNull(value);
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final BigInteger value) {
 		Objects.requireNonNull(value);
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
@@ -40,24 +40,24 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final double value) {
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int value) {
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int index, final BigDecimal value) {
 		Objects.requireNonNull(value);
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int index, final BigInteger value) {
 		Objects.requireNonNull(value);
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
@@ -67,12 +67,12 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final int index, final double value) {
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int index, final int value) {
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
@@ -95,13 +95,13 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final int index, final long value) {
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int index, final String value) {
 		Objects.requireNonNull(value);
-		return add(index, provider.createValue(value));
+		return add(index, context.createValue(value));
 	}
 
 	@Override
@@ -123,13 +123,13 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final long value) {
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder add(final String value) {
 		Objects.requireNonNull(value);
-		return add(provider.createValue(value));
+		return add(context.createValue(value));
 	}
 
 	@Override
@@ -163,13 +163,13 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 	@Override
 	public JsonArrayBuilder set(final int index, final BigDecimal value) {
 		Objects.requireNonNull(value);
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder set(final int index, final BigInteger value) {
 		Objects.requireNonNull(value);
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override
@@ -179,12 +179,12 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder set(final int index, final double value) {
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder set(final int index, final int value) {
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override
@@ -207,13 +207,13 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder set(final int index, final long value) {
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override
 	public JsonArrayBuilder set(final int index, final String value) {
 		Objects.requireNonNull(value);
-		return set(index, provider.createValue(value));
+		return set(index, context.createValue(value));
 	}
 
 	@Override

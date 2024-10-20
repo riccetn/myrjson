@@ -11,24 +11,21 @@ import jakarta.json.JsonConfig.KeyStrategy;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
+import se.narstrom.myr.json.MyrJsonContext;
 import se.narstrom.myr.json.value.MyrJsonArrayBuilder;
 import se.narstrom.myr.json.value.MyrJsonObjectBuilder;
 
 public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
-	private final JsonProvider provider;
+	private final MyrJsonContext context;
 
-	private final KeyStrategy keyStrategy;
-
-	public MyrJsonBuilderFactory(final JsonProvider provider, final Map<String, ?> config) {
-		this.provider = provider;
-		this.keyStrategy = (KeyStrategy) config.get(JsonConfig.KEY_STRATEGY);
+	public MyrJsonBuilderFactory(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
-		return new MyrJsonArrayBuilder(provider);
+		return new MyrJsonArrayBuilder(context);
 	}
 
 	@Override
@@ -52,7 +49,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new MyrJsonObjectBuilder(provider, (keyStrategy != null) ? keyStrategy : KeyStrategy.LAST);
+		return new MyrJsonObjectBuilder(context);
 	}
 
 	@Override
@@ -75,6 +72,7 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
+		final KeyStrategy keyStrategy = context.getConfiguredKeyStrategy();
 		if (keyStrategy != null)
 			return Map.of(JsonConfig.KEY_STRATEGY, keyStrategy);
 		else
@@ -84,8 +82,8 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 	private JsonValue createJsonValue(final Object obj) {
 		return switch (obj) {
 			case JsonValue val -> val;
-			case String str -> provider.createValue(str);
-			case Number num -> provider.createValue(num);
+			case String str -> context.createValue(str);
+			case Number num -> context.createValue(num);
 			default -> throw new IllegalArgumentException();
 		};
 	}

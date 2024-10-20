@@ -7,33 +7,29 @@ import java.util.Map;
 import java.util.Objects;
 
 import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonConfig.KeyStrategy;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
-	private final JsonProvider provider;
-
-	private final KeyStrategy keyStrategy;
+	private final MyrJsonContext context;
 
 	private final Map<String, JsonValue> map = new LinkedHashMap<>();
 
-	public MyrJsonObjectBuilder(final JsonProvider provider, final KeyStrategy keyStrategy) {
-		this.provider = provider;
-		this.keyStrategy = keyStrategy;
+	public MyrJsonObjectBuilder(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final BigDecimal value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final BigInteger value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
@@ -43,12 +39,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final double value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final int value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
@@ -66,7 +62,7 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 		Objects.requireNonNull(name);
 		Objects.requireNonNull(value);
 
-		switch (keyStrategy) {
+		switch (context.getKeyStrategy()) {
 			case FIRST -> map.putIfAbsent(name, value);
 			case LAST -> map.put(name, value);
 			case NONE -> {
@@ -79,12 +75,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final long value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final String value) {
-		return add(name, provider.createValue(value));
+		return add(name, context.createValue(value));
 	}
 
 	@Override
