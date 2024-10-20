@@ -9,13 +9,14 @@ import java.util.Map;
 
 import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
+import se.narstrom.myr.json.MyrJsonContext;
 import se.narstrom.myr.json.generator.MyrJsonGenerator;
 
 public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
-	private final Object prettyPrinting;
+	private final MyrJsonContext context;
 
-	public MyrJsonGeneratorFactory(final Map<String, ?> config) {
-		this.prettyPrinting = config.getOrDefault(JsonGenerator.PRETTY_PRINTING, null);
+	public MyrJsonGeneratorFactory(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
@@ -35,6 +36,7 @@ public final class MyrJsonGeneratorFactory implements JsonGeneratorFactory {
 
 	@Override
 	public Map<String, ?> getConfigInUse() {
+		final Object prettyPrinting = context.getConfiguredPrettyPrinting();
 		if (prettyPrinting != null)
 			return Map.of(JsonGenerator.PRETTY_PRINTING, prettyPrinting);
 		else

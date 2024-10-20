@@ -31,7 +31,6 @@ import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
-import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
@@ -87,7 +86,10 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
-		return new MyrJsonGeneratorFactory(config);
+		if (config == null)
+			return defaultContext.createGeneratorFactory();
+		else
+			return new MyrJsonContext(config).createGeneratorFactory();
 	}
 
 	@Override

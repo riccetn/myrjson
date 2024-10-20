@@ -10,7 +10,10 @@ import jakarta.json.JsonConfig;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonString;
 import jakarta.json.JsonConfig.KeyStrategy;
+import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
+import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
@@ -18,12 +21,19 @@ public final class MyrJsonContext {
 
 	private final KeyStrategy keyStrategy;
 
+	private final Object prettyPrinting;
+
 	MyrJsonContext(final Map<String, ?> config) {
 		this.keyStrategy = (KeyStrategy) config.get(JsonConfig.KEY_STRATEGY);
+		this.prettyPrinting = config.get(JsonGenerator.PRETTY_PRINTING);
 	}
 
 	public JsonBuilderFactory createBuilderFactory() {
 		return new MyrJsonBuilderFactory(this);
+	}
+
+	public JsonGeneratorFactory createGeneratorFactory() {
+		return new MyrJsonGeneratorFactory(this);
 	}
 
 	public JsonNumber createValue(final BigDecimal value) {
@@ -66,6 +76,10 @@ public final class MyrJsonContext {
 
 	public KeyStrategy getConfiguredKeyStrategy() {
 		return keyStrategy;
+	}
+
+	public Object getConfiguredPrettyPrinting() {
+		return prettyPrinting;
 	}
 
 	public KeyStrategy getKeyStrategy() {
