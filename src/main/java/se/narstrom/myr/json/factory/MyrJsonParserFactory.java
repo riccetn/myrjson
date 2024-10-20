@@ -19,7 +19,6 @@ import se.narstrom.myr.json.parser.MyrJsonArrayParser;
 import se.narstrom.myr.json.parser.MyrJsonLocation;
 import se.narstrom.myr.json.parser.MyrJsonObjectParser;
 import se.narstrom.myr.json.parser.MyrJsonStreamParser;
-import se.narstrom.myr.json.parser.MyrReader;
 
 public final class MyrJsonParserFactory implements JsonParserFactory {
 	private final JsonProvider provider;
@@ -57,11 +56,7 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 
 	@Override
 	public JsonParser createParser(final Reader reader) {
-		try {
-			return new MyrJsonStreamParser(provider, new MyrReader(reader));
-		} catch (final IOException ex) {
-			throw new JsonParsingException(ex.getMessage(), ex, new MyrJsonLocation(-1, -1, -1));
-		}
+		return new MyrJsonStreamParser(provider, reader);
 	}
 
 	@Override

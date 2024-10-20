@@ -1,19 +1,22 @@
 package se.narstrom.myr.json.parser;
 
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParsingException;
 
 public final class MyrJsonStreamParser extends MyrJsonParserBase {
-	private final MyrReader reader;
-
 	private final Deque<State> stack = new ArrayDeque<>();
+	
+	private final Reader in;
 
 	private Event event = null;
 
@@ -25,15 +28,27 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private State state = State.INIT;
 
-	public MyrJsonStreamParser(final JsonProvider provider, final MyrReader reader) {
+	private char[] buf = new char[4096];
+
+	private int buflen = 0;
+
+	private int bufp = 0;
+
+	private long lineNo = 1;
+
+	private long columnNo = 1;
+
+	private long offset = 0;
+
+	public MyrJsonStreamParser(final JsonProvider provider, final Reader in) {
 		super(provider);
-		this.reader = reader;
+		this.in = in;
 	}
 
 	@Override
 	public void close() {
 		try {
-			reader.close();
+			in.close();
 		} catch (final IOException ex) {
 			throw new JsonParsingException(ex.getMessage(), ex, location);
 		}
@@ -95,6 +110,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		}
 	}
 
+	private JsonLocation createLocation() {
+		return new MyrJsonLocation(lineNo, columnNo, offset);
+	}
+
 	private void endArray() {
 		state = stack.pop();
 		event = Event.END_ARRAY;
@@ -107,18 +126,23 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private void keyName() throws IOException {
 		parseString();
-		reader.skipWhitespace();
-		if (reader.readChar() != ':')
+		skipWhitespace();
+		if (readChar() != ':')
 			throw new JsonParsingException("Expected ':' after key", location);
 		state = State.OBJECT_VALUE;
 		event = Event.KEY_NAME;
 	}
 
-	private void nextArrayComma() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+	private void maybeFillBuffer() throws IOException {
+		if (bufp >= buflen)
+			buflen = in.read(buf);
+	}
 
-		final char ch = reader.readChar();
+	private void nextArrayComma() throws IOException {
+		skipWhitespace();
+		location = createLocation();
+
+		final char ch = readChar();
 		switch (ch) {
 			case ']' -> endArray();
 			case ',' -> state = State.ARRAY_VALUE;
@@ -127,11 +151,11 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextArrayInit() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+		skipWhitespace();
+		location = createLocation();
 
-		if (reader.peekChar() == ']') {
-			reader.readChar();
+		if (peekChar() == ']') {
+			readChar();
 			endArray();
 			return;
 		}
@@ -148,10 +172,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextObjectComma() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+		skipWhitespace();
+		location = createLocation();
 
-		final char ch = reader.readChar();
+		final char ch = readChar();
 		switch (ch) {
 			case '}' -> endObject();
 			case ',' -> state = State.OBJECT_KEY;
@@ -160,10 +184,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextObjectInit() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+		skipWhitespace();
+		location = createLocation();
 
-		final char ch = reader.readChar();
+		final char ch = readChar();
 		switch (ch) {
 			case '}' -> endObject();
 			case '\"' -> keyName();
@@ -172,10 +196,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextObjectKey() throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+		skipWhitespace();
+		location = createLocation();
 
-		final char ch = reader.readChar();
+		final char ch = readChar();
 		if (ch != '\"')
 			throw new JsonParsingException("Unexpected " + ch + ", sate: " + state, location);
 		keyName();
@@ -186,10 +210,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void nextValue(final State nextState) throws IOException {
-		reader.skipWhitespace();
-		location = reader.getLocation();
+		skipWhitespace();
+		location = createLocation();
 
-		final char ch = reader.readChar();
+		final char ch = readChar();
 		switch (ch) {
 			case '{' -> startObject(nextState);
 			case '[' -> startArray(nextState);
@@ -202,9 +226,9 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	private void parseString() throws IOException {
 		final StringBuilder sb = new StringBuilder();
 		char ch;
-		while ((ch = reader.readChar()) != '"') {
+		while ((ch = readChar()) != '"') {
 			if (ch == '\\') {
-				ch = reader.readChar();
+				ch = readChar();
 				switch (ch) {
 					case '\"' -> sb.append('\"');
 					case '\\' -> sb.append('\\');
@@ -216,7 +240,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 					case 't' -> sb.append('\t');
 					case 'u' -> {
 						char[] chs = new char[4];
-						reader.readChars(chs);
+						readChars(chs);
 						sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
 					}
 					default -> throw new JsonParsingException("Unknown escape character " + ch, location);
@@ -228,13 +252,100 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		stringValue = sb.toString();
 	}
 
+	private int peekChar() throws IOException {
+		maybeFillBuffer();
+		if (buflen == -1)
+			return -1;
+		return buf[bufp];
+	}
+	
+	private int read() throws IOException {
+		maybeFillBuffer();
+		if (buflen == -1)
+			return -1;
+
+		final char ch = buf[bufp++];
+		if (ch == '\n') {
+			++lineNo;
+			columnNo = 1;
+		} else {
+			++columnNo;
+		}
+		++offset;
+
+		return ch;
+	}
+
+	private int read(final char[] cbuf, final int off, final int len) throws IOException {
+		Objects.checkFromIndexSize(off, len, cbuf.length);
+		maybeFillBuffer();
+		if (buflen == -1)
+			return -1;
+
+		final int realLen = Math.min(len, buflen - bufp);
+		System.arraycopy(buf, bufp, cbuf, off, realLen);
+
+		for (int i = bufp; i < bufp + realLen; ++i) {
+			if (buf[i] == '\n') {
+				++lineNo;
+				columnNo = 1;
+			} else {
+				++columnNo;
+			}
+		}
+		bufp += realLen;
+		offset += realLen;
+
+		return realLen;
+	}
+
+	private char readChar() throws IOException {
+		int ch = read();
+		if (ch == -1)
+			throw new EOFException();
+		return (char) ch;
+	}
+
+	private void readChars(final char[] chs) throws IOException {
+		int read = 0;
+		while (read < chs.length) {
+			int r = read(chs, read, chs.length - read);
+			if (r == -1)
+				throw new EOFException();
+			read += r;
+		}
+	}
+
 	private void readDigits(final StringBuilder sb) throws IOException {
 		while (true) {
-			final int ch = reader.peekChar();
+			final int ch = peekChar();
 			if (ch < '0' || ch > '9')
 				return;
 
-			sb.append(reader.readChar());
+			sb.append(readChar());
+		}
+	}
+
+	private void skipWhitespace() throws IOException {
+		while (true) {
+			maybeFillBuffer();
+			if (buflen == -1)
+				throw new EOFException();
+			while (bufp < buflen) {
+				char ch = buf[bufp];
+				if (ch == '\n') {
+					++lineNo;
+					columnNo = 1;
+				} else {
+					++columnNo;
+				}
+				++offset;
+
+				if (ch != ' ' && ch != '\n' && ch != '\r' && ch != '\t')
+					return;
+
+				++bufp;
+			}
 		}
 	}
 
@@ -255,10 +366,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		sb.append(ch0);
 
 		while (sb.length() < 5) {
-			final int ch = reader.peekChar();
+			final int ch = peekChar();
 			if (ch < 'a' || ch > 'z')
 				break;
-			sb.append(reader.readChar());
+			sb.append(readChar());
 		}
 
 		final String keyword = sb.toString();
@@ -278,7 +389,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 		int ch;
 		if (ch0 == '-') {
-			ch = reader.readChar();
+			ch = readChar();
 			if (ch < '0' || ch > '9')
 				throw new JsonParsingException("Not a number", location);
 			sb.append((char) ch);
@@ -290,19 +401,19 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			readDigits(sb);
 		}
 
-		ch = reader.peekChar();
+		ch = peekChar();
 
 		if (ch == '.') {
 			sb.append('.');
-			reader.readChar();
+			readChar();
 			readDigits(sb);
-			ch = reader.peekChar();
+			ch = peekChar();
 		}
 
 		if (ch == 'e' || ch == 'E') {
 			sb.append((char) ch);
-			reader.readChar();
-			ch = reader.readChar();
+			readChar();
+			ch = readChar();
 			if (ch != '+' && ch != '-' && (ch < '0' || ch > '9'))
 				throw new JsonParsingException("Not a number", location);
 			sb.append((char) ch);
