@@ -41,6 +41,8 @@ import se.narstrom.myr.json.patch.MyrJsonPointer;
 
 public final class MyrJsonProvider extends JsonProvider {
 
+	private final MyrJsonContext defaultContext = new MyrJsonContext(Map.of());
+
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
 		return createBuilderFactory(Map.of()).createArrayBuilder();
@@ -67,11 +69,6 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonPatch createDiff(final JsonStructure source, final JsonStructure target) {
 		return new MyrJsonPatch(source, target, this, createBuilderFactory(Map.of()));
-	}
-
-	@Override
-	public JsonPatch createPatch(final JsonArray array) {
-		return new MyrJsonPatch(array, this, createBuilderFactory(Map.of()));
 	}
 
 	@Override
@@ -120,11 +117,6 @@ public final class MyrJsonProvider extends JsonProvider {
 	}
 
 	@Override
-	public JsonPatchBuilder createPatchBuilder() {
-		return new MyrJsonPatchBuilder(this, createBuilderFactory(Map.of()));
-	}
-
-	@Override
 	public JsonParser createParser(final InputStream in) {
 		return createParserFactory(Map.of()).createParser(in);
 	}
@@ -137,6 +129,16 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonParserFactory createParserFactory(final Map<String, ?> config) {
 		return new MyrJsonParserFactory(this);
+	}
+
+	@Override
+	public JsonPatch createPatch(final JsonArray array) {
+		return new MyrJsonPatch(array, this, createBuilderFactory(Map.of()));
+	}
+
+	@Override
+	public JsonPatchBuilder createPatchBuilder() {
+		return new MyrJsonPatchBuilder(this, createBuilderFactory(Map.of()));
 	}
 
 	@Override
@@ -208,6 +210,4 @@ public final class MyrJsonProvider extends JsonProvider {
 	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
 		return new MyrJsonWriterFactory(createGeneratorFactory(config));
 	}
-
-	private MyrJsonContext defaultContext = new MyrJsonContext(Map.of());
 }
