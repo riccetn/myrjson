@@ -45,17 +45,17 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
-		return createBuilderFactory(Map.of()).createArrayBuilder();
+		return defaultContext.defaultBuilderFactory().createArrayBuilder();
 	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder(final Collection<?> collection) {
-		return createBuilderFactory(Map.of()).createArrayBuilder(collection);
+		return defaultContext.defaultBuilderFactory().createArrayBuilder(collection);
 	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder(final JsonArray array) {
-		return createBuilderFactory(Map.of()).createArrayBuilder(array);
+		return defaultContext.defaultBuilderFactory().createArrayBuilder(array);
 	}
 
 	@Override

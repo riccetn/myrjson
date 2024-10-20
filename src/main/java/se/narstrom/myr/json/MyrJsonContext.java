@@ -18,6 +18,9 @@ import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonContext {
+	private final JsonBuilderFactory defaultBuilderFactory = new MyrJsonBuilderFactory(this);
+
+	private final JsonGeneratorFactory defaultGeneratorFactory = new MyrJsonGeneratorFactory(this);
 
 	private final KeyStrategy keyStrategy;
 
@@ -72,6 +75,14 @@ public final class MyrJsonContext {
 
 	public JsonString createValue(final String value) {
 		return new MyrJsonString(Objects.requireNonNull(value));
+	}
+
+	public JsonBuilderFactory defaultBuilderFactory() {
+		return this.defaultBuilderFactory;
+	}
+
+	public JsonGeneratorFactory defaultGeneratorFactory() {
+		return this.defaultGeneratorFactory;
 	}
 
 	public KeyStrategy getConfiguredKeyStrategy() {
