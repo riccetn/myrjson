@@ -4,32 +4,28 @@ import java.util.logging.Logger;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParsingException;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonReader implements JsonReader {
-	private final Logger LOG = Logger.getLogger(getClass().getName());
+	private static final Logger LOG = Logger.getLogger(MyrJsonReader.class.getName());
 
-	private final JsonProvider provider;
-
-	private final JsonBuilderFactory builderFactory;
+	private final MyrJsonContext context;
 
 	private final JsonParser parser;
 
 	private boolean closed = false;
 
-	public MyrJsonReader(final JsonProvider provider, final JsonBuilderFactory builderFactory, final JsonParser parser) {
-		this.provider = provider;
-		this.builderFactory = builderFactory;
+	public MyrJsonReader(final JsonParser parser, final MyrJsonContext context) {
 		this.parser = parser;
+		this.context = context;
 	}
 
 	@Override
@@ -85,7 +81,7 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	private JsonArray onStartArray() {
-		final JsonArrayBuilder builder = builderFactory.createArrayBuilder();
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder();
 
 		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_ARRAY; event = parser.next()) {
 			builder.add(readValue(event));
@@ -95,7 +91,7 @@ public final class MyrJsonReader implements JsonReader {
 	}
 
 	private JsonObject onStartObject() {
-		final JsonObjectBuilder builder = builderFactory.createObjectBuilder();
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder();
 
 		for (JsonParser.Event event = parser.next(); event != JsonParser.Event.END_OBJECT; event = parser.next()) {
 			if (event != JsonParser.Event.KEY_NAME)
@@ -117,8 +113,8 @@ public final class MyrJsonReader implements JsonReader {
 		return switch (event) {
 			case START_OBJECT -> onStartObject();
 			case START_ARRAY -> onStartArray();
-			case VALUE_STRING -> provider.createValue(parser.getString());
-			case VALUE_NUMBER -> provider.createValue(parser.getBigDecimal());
+			case VALUE_STRING -> context.createValue(parser.getString());
+			case VALUE_NUMBER -> context.createValue(parser.getBigDecimal());
 			case VALUE_TRUE -> JsonValue.TRUE;
 			case VALUE_FALSE -> JsonValue.FALSE;
 			case VALUE_NULL -> JsonValue.NULL;
