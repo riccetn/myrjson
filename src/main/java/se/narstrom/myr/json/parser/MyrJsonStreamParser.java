@@ -9,9 +9,9 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
 import jakarta.json.stream.JsonParsingException;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	private final Deque<State> stack = new ArrayDeque<>();
@@ -40,8 +40,8 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private long offset = 0;
 
-	public MyrJsonStreamParser(final JsonProvider provider, final Reader in) {
-		super(provider);
+	public MyrJsonStreamParser(final Reader in, final MyrJsonContext context) {
+		super(context);
 		this.in = in;
 	}
 

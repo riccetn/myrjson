@@ -14,14 +14,14 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonParser;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public abstract class MyrJsonParserBase implements JsonParser {
-	protected final JsonProvider provider;
+	protected final MyrJsonContext context;
 
-	protected MyrJsonParserBase(final JsonProvider provider) {
-		this.provider = provider;
+	protected MyrJsonParserBase(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		if (currentEvent() != Event.START_ARRAY)
 			throw new IllegalStateException();
 
-		final JsonArrayBuilder builder = provider.createArrayBuilder();
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder();
 
 		while (next() != Event.END_ARRAY) {
 			builder.add(getValue());
@@ -62,7 +62,7 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		if (currentEvent() != Event.START_OBJECT)
 			throw new IllegalStateException();
 
-		final JsonObjectBuilder builder = provider.createObjectBuilder();
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder();
 
 		while (next() != Event.END_OBJECT) {
 			assert currentEvent() == Event.KEY_NAME;
@@ -91,8 +91,8 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		return switch (currentEvent()) {
 			case START_ARRAY -> getArray();
 			case START_OBJECT -> getObject();
-			case VALUE_STRING, KEY_NAME -> provider.createValue(getString());
-			case VALUE_NUMBER -> provider.createValue(getBigDecimal());
+			case VALUE_STRING, KEY_NAME -> context.createValue(getString());
+			case VALUE_NUMBER -> context.createValue(getBigDecimal());
 			case VALUE_TRUE -> JsonValue.TRUE;
 			case VALUE_FALSE -> JsonValue.FALSE;
 			case VALUE_NULL -> JsonValue.NULL;

@@ -11,20 +11,20 @@ import java.util.Map;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 import jakarta.json.stream.JsonParsingException;
+import se.narstrom.myr.json.MyrJsonContext;
 import se.narstrom.myr.json.parser.MyrJsonArrayParser;
 import se.narstrom.myr.json.parser.MyrJsonLocation;
 import se.narstrom.myr.json.parser.MyrJsonObjectParser;
 import se.narstrom.myr.json.parser.MyrJsonStreamParser;
 
 public final class MyrJsonParserFactory implements JsonParserFactory {
-	private final JsonProvider provider;
+	private final MyrJsonContext context;
 
-	public MyrJsonParserFactory(final JsonProvider provider) {
-		this.provider = provider;
+	public MyrJsonParserFactory(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
@@ -46,17 +46,17 @@ public final class MyrJsonParserFactory implements JsonParserFactory {
 
 	@Override
 	public JsonParser createParser(final JsonArray array) {
-		return new MyrJsonArrayParser(provider, array);
+		return new MyrJsonArrayParser(array, context);
 	}
 
 	@Override
 	public JsonParser createParser(final JsonObject object) {
-		return new MyrJsonObjectParser(provider, object);
+		return new MyrJsonObjectParser(object, context);
 	}
 
 	@Override
 	public JsonParser createParser(final Reader reader) {
-		return new MyrJsonStreamParser(provider, reader);
+		return new MyrJsonStreamParser(reader, context);
 	}
 
 	@Override

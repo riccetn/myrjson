@@ -10,8 +10,8 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
-import jakarta.json.spi.JsonProvider;
 import jakarta.json.stream.JsonLocation;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonArrayParser extends MyrJsonParserBase {
 	private final Iterator<JsonValue> iterator;
@@ -22,8 +22,8 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 
 	private MyrJsonParserBase subParser;
 
-	public MyrJsonArrayParser(final JsonProvider provider, final JsonArray array) {
-		super(provider);
+	public MyrJsonArrayParser(final JsonArray array, final MyrJsonContext context) {
+		super(context);
 		this.iterator = array.iterator();
 	}
 
@@ -114,11 +114,11 @@ public final class MyrJsonArrayParser extends MyrJsonParserBase {
 	private Event valueToEvent() {
 		return switch (value.getValueType()) {
 			case OBJECT -> {
-				subParser = new MyrJsonObjectParser(provider, (JsonObject) value);
+				subParser = new MyrJsonObjectParser((JsonObject) value, context);
 				yield subParser.next();
 			}
 			case ARRAY -> {
-				subParser = new MyrJsonArrayParser(provider, (JsonArray) value);
+				subParser = new MyrJsonArrayParser((JsonArray) value, context);
 				yield subParser.next();
 			}
 			case STRING -> Event.VALUE_STRING;
