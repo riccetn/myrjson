@@ -31,6 +31,10 @@ import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
+import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
+import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
+import se.narstrom.myr.json.factory.MyrJsonParserFactory;
+import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
 import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
 import se.narstrom.myr.json.patch.MyrJsonPatch;
 import se.narstrom.myr.json.patch.MyrJsonPatchBuilder;
@@ -59,9 +63,9 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonBuilderFactory createBuilderFactory(final Map<String, ?> config) {
 		if (config == null)
-			return defaultContext.createBuilderFactory();
+			return new MyrJsonBuilderFactory(defaultContext);
 		else
-			return new MyrJsonContext(config).createBuilderFactory();
+			return new MyrJsonBuilderFactory(new MyrJsonContext(config));
 	}
 
 	@Override
@@ -82,9 +86,9 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonGeneratorFactory createGeneratorFactory(final Map<String, ?> config) {
 		if (config == null)
-			return defaultContext.createGeneratorFactory();
+			return new MyrJsonGeneratorFactory(defaultContext);
 		else
-			return new MyrJsonContext(config).createGeneratorFactory();
+			return new MyrJsonGeneratorFactory(new MyrJsonContext(config));
 	}
 
 	@Override
@@ -127,9 +131,9 @@ public final class MyrJsonProvider extends JsonProvider {
 	@Override
 	public JsonParserFactory createParserFactory(final Map<String, ?> config) {
 		if (config == null)
-			return defaultContext.createParserFactory();
+			return new MyrJsonParserFactory(defaultContext);
 		else
-			return new MyrJsonContext(config).createParserFactory();
+			return new MyrJsonParserFactory(new MyrJsonContext(config));
 	}
 
 	@Override
@@ -159,10 +163,10 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonReaderFactory createReaderFactory(final Map<String, ?> config) {
-		if(config == null)
-			return defaultContext.createReaderFactory();
+		if (config == null)
+			return new MyrJsonReaderFactory(defaultContext);
 		else
-			return new MyrJsonContext(config).createReaderFactory();
+			return new MyrJsonReaderFactory(new MyrJsonContext(config));
 	}
 
 	@Override

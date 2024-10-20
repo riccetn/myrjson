@@ -39,22 +39,6 @@ public final class MyrJsonContext {
 		this.prettyPrinting = config.get(JsonGenerator.PRETTY_PRINTING);
 	}
 
-	public JsonBuilderFactory createBuilderFactory() {
-		return new MyrJsonBuilderFactory(this);
-	}
-
-	public JsonGeneratorFactory createGeneratorFactory() {
-		return new MyrJsonGeneratorFactory(this);
-	}
-
-	public JsonParserFactory createParserFactory() {
-		return new MyrJsonParserFactory(this);
-	}
-
-	public JsonReaderFactory createReaderFactory() {
-		return new MyrJsonReaderFactory(this);
-	}
-
 	public JsonNumber createValue(final BigDecimal value) {
 		return new MyrJsonNumber(Objects.requireNonNull(value));
 	}
