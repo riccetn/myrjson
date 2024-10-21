@@ -10,6 +10,7 @@ import jakarta.json.JsonConfig;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonString;
+import jakarta.json.JsonWriterFactory;
 import jakarta.json.JsonConfig.KeyStrategy;
 import jakarta.json.stream.JsonGenerator;
 import jakarta.json.stream.JsonGeneratorFactory;
@@ -18,6 +19,7 @@ import se.narstrom.myr.json.factory.MyrJsonBuilderFactory;
 import se.narstrom.myr.json.factory.MyrJsonGeneratorFactory;
 import se.narstrom.myr.json.factory.MyrJsonParserFactory;
 import se.narstrom.myr.json.factory.MyrJsonReaderFactory;
+import se.narstrom.myr.json.factory.MyrJsonWriterFactory;
 import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
@@ -29,6 +31,8 @@ public final class MyrJsonContext {
 	private final JsonParserFactory defaultParserFactory = new MyrJsonParserFactory(this);
 
 	private final JsonReaderFactory defaultReaderFactory = new MyrJsonReaderFactory(this);
+
+	private final JsonWriterFactory defaultWriterFactory = new MyrJsonWriterFactory(this);
 
 	private final KeyStrategy keyStrategy;
 
@@ -91,6 +95,10 @@ public final class MyrJsonContext {
 
 	public JsonReaderFactory defaultReaderFactory() {
 		return this.defaultReaderFactory;
+	}
+
+	public JsonWriterFactory defaultWriterFactory() {
+		return this.defaultWriterFactory;
 	}
 
 	public KeyStrategy getConfiguredKeyStrategy() {

@@ -216,6 +216,9 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonWriterFactory createWriterFactory(final Map<String, ?> config) {
-		return new MyrJsonWriterFactory(createGeneratorFactory(config));
+		if (config == null)
+			return new MyrJsonWriterFactory(defaultContext);
+		else
+			return new MyrJsonWriterFactory(new MyrJsonContext(config));
 	}
 }
