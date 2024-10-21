@@ -2,6 +2,7 @@ package se.narstrom.myr.json.value;
 
 import java.util.AbstractList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -10,20 +11,22 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonArray {
-	private List<JsonValue> list;
+	private JsonValue[] array;
 
 	MyrJsonArray(final List<JsonValue> list) {
-		this.list = List.copyOf(list);
+		this.array = list.toArray(JsonValue[]::new);
 	}
 
 	@Override
 	public JsonValue get(final int index) {
-		return list.get(index);
+		return array[index];
 	}
 
 	@Override
 	public boolean getBoolean(final int index) {
-		final JsonValue value = list.get(index);
+		Objects.checkIndex(index, array.length);
+		final JsonValue value = array[index];
+
 		if (value == JsonValue.TRUE)
 			return true;
 		else if (value == JsonValue.FALSE)
@@ -34,7 +37,11 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 
 	@Override
 	public boolean getBoolean(final int index, final boolean defaultValue) {
-		final JsonValue value = list.get(index);
+		if (index < 0 || index >= array.length)
+			return defaultValue;
+
+		final JsonValue value = array[index];
+
 		if (value == JsonValue.TRUE)
 			return true;
 		else if (value == JsonValue.FALSE)
@@ -50,30 +57,39 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 
 	@Override
 	public int getInt(final int index, final int defaultValue) {
-		final JsonValue value = list.get(index);
-		if (value == null || value.getValueType() != ValueType.NUMBER)
+		if (index < 0 || index >= array.length)
 			return defaultValue;
+
+		final JsonValue value = array[index];
+
+		if (value.getValueType() != ValueType.NUMBER)
+			return defaultValue;
+
 		return ((JsonNumber) value).intValue();
 	}
 
 	@Override
 	public JsonArray getJsonArray(final int index) {
-		return (JsonArray) list.get(index);
+		Objects.checkIndex(index, array.length);
+		return (JsonArray) array[index];
 	}
 
 	@Override
 	public JsonNumber getJsonNumber(final int index) {
-		return (JsonNumber) list.get(index);
+		Objects.checkIndex(index, array.length);
+		return (JsonNumber) array[index];
 	}
 
 	@Override
 	public JsonObject getJsonObject(final int index) {
-		return (JsonObject) list.get(index);
+		Objects.checkIndex(index, array.length);
+		return (JsonObject) array[index];
 	}
 
 	@Override
 	public JsonString getJsonString(final int index) {
-		return (JsonString) list.get(index);
+		Objects.checkIndex(index, array.length);
+		return (JsonString) array[index];
 	}
 
 	@Override
@@ -83,7 +99,11 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 
 	@Override
 	public String getString(final int index, final String defaultValue) {
-		final JsonValue value = list.get(index);
+		if (index < 0 || index >= array.length)
+			return defaultValue;
+
+		final JsonValue value = array[index];
+
 		if (value == null || value.getValueType() != ValueType.STRING)
 			return defaultValue;
 		return ((JsonString) value).getString();
@@ -92,7 +112,7 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends JsonValue> List<T> getValuesAs(final Class<T> clazz) {
-		return (List<T>) list;
+		return (List<T>) List.of(array);
 	}
 
 	@Override
@@ -102,11 +122,12 @@ public final class MyrJsonArray extends AbstractList<JsonValue> implements JsonA
 
 	@Override
 	public boolean isNull(final int index) {
-		return list.get(index) == JsonValue.NULL;
+		Objects.checkIndex(index, array.length);
+		return array[index] == JsonValue.NULL;
 	}
 
 	@Override
 	public int size() {
-		return list.size();
+		return array.length;
 	}
 }
