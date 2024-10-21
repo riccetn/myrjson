@@ -1,9 +1,8 @@
 package se.narstrom.myr.json.patch;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -11,222 +10,112 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-final class MutableJsonArray implements JsonArray, MutableJsonStructure {
+final class MutableJsonArray extends AbstractList<JsonValue> implements JsonArray, MutableJsonStructure {
+	private final List<JsonValue> list = new ArrayList<>();
 
 	@Override
-	public void add(int index, JsonValue element) {
-		// TODO Auto-generated method stub
-		
+	public boolean add(final JsonValue value) {
+		return list.add(value);
 	}
 
 	@Override
-	public boolean add(JsonValue e) {
-		// TODO Auto-generated method stub
-		return false;
+	public void add(final int index, final JsonValue value) {
+		list.add(index, value);
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends JsonValue> c) {
-		// TODO Auto-generated method stub
-		return false;
+	public JsonValue get(final int index) {
+		return list.get(index);
 	}
 
 	@Override
-	public boolean addAll(int index, Collection<? extends JsonValue> c) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean getBoolean(final int index) {
+		return switch (list.get(index).getValueType()) {
+			case TRUE -> true;
+			case FALSE -> false;
+			default -> throw new ClassCastException();
+		};
 	}
 
 	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
+	public boolean getBoolean(final int index, final boolean defaultValue) {
+		if (index < 0 || index >= list.size())
+			return defaultValue;
+
+		return switch (list.get(index).getValueType()) {
+			case TRUE -> true;
+			case FALSE -> false;
+			default -> defaultValue;
+		};
 	}
 
 	@Override
-	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+	public int getInt(final int index) {
+		return ((JsonNumber) list.get(index)).intValue();
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+	public int getInt(final int index, final int defaultValue) {
+		if (index < 0 || index >= list.size())
+			return defaultValue;
+		return ((JsonNumber) list.get(index)).intValue();
 	}
 
 	@Override
-	public JsonValue get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+	public JsonArray getJsonArray(final int index) {
+		return list.get(index).asJsonArray();
 	}
 
 	@Override
-	public boolean getBoolean(int index) {
-		// TODO Auto-generated method stub
-		return false;
+	public JsonNumber getJsonNumber(final int index) {
+		return (JsonNumber) list.get(index);
 	}
 
 	@Override
-	public boolean getBoolean(int index, boolean defaultValue) {
-		// TODO Auto-generated method stub
-		return false;
+	public JsonObject getJsonObject(final int index) {
+		return list.get(index).asJsonObject();
 	}
 
 	@Override
-	public int getInt(int index) {
-		// TODO Auto-generated method stub
-		return 0;
+	public JsonString getJsonString(final int index) {
+		return (JsonString) list.get(index);
 	}
 
 	@Override
-	public int getInt(int index, int defaultValue) {
-		// TODO Auto-generated method stub
-		return 0;
+	public String getString(final int index) {
+		return ((JsonString) list.get(index)).getString();
 	}
 
 	@Override
-	public JsonArray getJsonArray(int index) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getString(final int index, final String defaultValue) {
+		if (index < 0 || index >= list.size())
+			return defaultValue;
+		return ((JsonString) list.get(index)).getString();
 	}
 
 	@Override
-	public JsonNumber getJsonNumber(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JsonObject getJsonObject(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JsonString getJsonString(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getString(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getString(int index, String defaultValue) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends JsonValue> List<T> getValuesAs(Class<T> clazz) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public <T extends JsonValue> List<T> getValuesAs(final Class<T> clazz) {
+		return (List<T>) List.copyOf(list);
 	}
 
 	@Override
 	public ValueType getValueType() {
-		// TODO Auto-generated method stub
-		return null;
+		return ValueType.ARRAY;
 	}
 
 	@Override
-	public int indexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+	public boolean isNull(final int index) {
+		return list.get(index) == JsonValue.NULL;
 	}
 
 	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isNull(int index) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Iterator<JsonValue> iterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int lastIndexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public ListIterator<JsonValue> listIterator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ListIterator<JsonValue> listIterator(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public JsonValue remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public JsonValue set(int index, JsonValue element) {
-		// TODO Auto-generated method stub
-		return null;
+	public JsonValue set(final int index, final JsonValue value) {
+		return list.set(index, value);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return list.size();
 	}
-
-	@Override
-	public List<JsonValue> subList(int fromIndex, int toIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
