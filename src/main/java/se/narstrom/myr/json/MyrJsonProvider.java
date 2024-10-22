@@ -40,6 +40,8 @@ import se.narstrom.myr.json.patch.MyrJsonPatch;
 import se.narstrom.myr.json.patch.MyrJsonPatchBuilder;
 import se.narstrom.myr.json.patch.MyrJsonMergePatch;
 import se.narstrom.myr.json.patch.MyrJsonPointer;
+import se.narstrom.myr.json.value.MyrJsonNumber;
+import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonProvider extends JsonProvider {
 
@@ -171,37 +173,47 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonNumber createValue(final BigDecimal value) {
-		return defaultContext.createValue(value);
+		return new MyrJsonNumber(value);
 	}
 
 	@Override
 	public JsonNumber createValue(final BigInteger value) {
-		return defaultContext.createValue(value);
+		return new MyrJsonNumber(new BigDecimal(value));
 	}
 
 	@Override
 	public JsonNumber createValue(final double value) {
-		return defaultContext.createValue(value);
+		return new MyrJsonNumber(BigDecimal.valueOf(value));
 	}
 
 	@Override
-	public JsonNumber createValue(int value) {
-		return defaultContext.createValue(value);
+	public JsonNumber createValue(final int value) {
+		return new MyrJsonNumber(BigDecimal.valueOf(value));
 	}
 
 	@Override
-	public JsonNumber createValue(long value) {
-		return defaultContext.createValue(value);
+	public JsonNumber createValue(final long value) {
+		return new MyrJsonNumber(BigDecimal.valueOf(value));
 	}
 
 	@Override
 	public JsonNumber createValue(final Number value) {
-		return defaultContext.createValue(value);
+		return switch (value) {
+			case BigDecimal val -> new MyrJsonNumber(val);
+			case BigInteger val -> new MyrJsonNumber(new BigDecimal(val));
+			case Double val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Float val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Long val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Integer val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Short val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Byte val -> new MyrJsonNumber(BigDecimal.valueOf(val));
+			case Number val -> new MyrJsonNumber(BigDecimal.valueOf(val.longValue()));
+		};
 	}
 
 	@Override
 	public JsonString createValue(final String value) {
-		return defaultContext.createValue(value);
+		return new MyrJsonString(value);
 	}
 
 	@Override

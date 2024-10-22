@@ -16,6 +16,8 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import se.narstrom.myr.json.MyrJsonContext;
+import se.narstrom.myr.json.value.MyrJsonNumber;
+import se.narstrom.myr.json.value.MyrJsonString;
 
 public abstract class MyrJsonParserBase implements JsonParser {
 	protected final MyrJsonContext context;
@@ -91,8 +93,8 @@ public abstract class MyrJsonParserBase implements JsonParser {
 		return switch (currentEvent()) {
 			case START_ARRAY -> getArray();
 			case START_OBJECT -> getObject();
-			case VALUE_STRING, KEY_NAME -> context.createValue(getString());
-			case VALUE_NUMBER -> context.createValue(getBigDecimal());
+			case VALUE_STRING, KEY_NAME -> new MyrJsonString(getString());
+			case VALUE_NUMBER -> new MyrJsonNumber(getBigDecimal());
 			case VALUE_TRUE -> JsonValue.TRUE;
 			case VALUE_FALSE -> JsonValue.FALSE;
 			case VALUE_NULL -> JsonValue.NULL;

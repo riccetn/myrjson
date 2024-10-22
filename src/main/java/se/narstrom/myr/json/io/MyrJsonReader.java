@@ -13,6 +13,8 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParsingException;
 import se.narstrom.myr.json.MyrJsonContext;
+import se.narstrom.myr.json.value.MyrJsonNumber;
+import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonReader implements JsonReader {
 	private static final Logger LOG = Logger.getLogger(MyrJsonReader.class.getName());
@@ -113,8 +115,8 @@ public final class MyrJsonReader implements JsonReader {
 		return switch (event) {
 			case START_OBJECT -> onStartObject();
 			case START_ARRAY -> onStartArray();
-			case VALUE_STRING -> context.createValue(parser.getString());
-			case VALUE_NUMBER -> context.createValue(parser.getBigDecimal());
+			case VALUE_STRING -> new MyrJsonString(parser.getString());
+			case VALUE_NUMBER -> new MyrJsonNumber(parser.getBigDecimal());
 			case VALUE_TRUE -> JsonValue.TRUE;
 			case VALUE_FALSE -> JsonValue.FALSE;
 			case VALUE_NULL -> JsonValue.NULL;
