@@ -183,17 +183,17 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonNumber createValue(final double value) {
-		return new MyrJsonNumber(BigDecimal.valueOf(value));
+		return new MyrJsonNumber(value);
 	}
 
 	@Override
 	public JsonNumber createValue(final int value) {
-		return new MyrJsonNumber(BigDecimal.valueOf(value));
+		return new MyrJsonNumber(value);
 	}
 
 	@Override
 	public JsonNumber createValue(final long value) {
-		return new MyrJsonNumber(BigDecimal.valueOf(value));
+		return new MyrJsonNumber(Balue);
 	}
 
 	@Override
@@ -201,13 +201,13 @@ public final class MyrJsonProvider extends JsonProvider {
 		return switch (value) {
 			case BigDecimal val -> new MyrJsonNumber(val);
 			case BigInteger val -> new MyrJsonNumber(new BigDecimal(val));
-			case Double val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Float val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Long val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Integer val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Short val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Byte val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Number val -> new MyrJsonNumber(BigDecimal.valueOf(val.longValue()));
+			case Double val -> new MyrJsonNumber(val);
+			case Float val -> new MyrJsonNumber(val);
+			case Long val -> new MyrJsonNumber(val);
+			case Integer val -> new MyrJsonNumber(val);
+			case Short val -> new MyrJsonNumber(val);
+			case Byte val -> new MyrJsonNumber(val);
+			case Number val -> new MyrJsonNumber(val.longValue());
 		};
 	}
 

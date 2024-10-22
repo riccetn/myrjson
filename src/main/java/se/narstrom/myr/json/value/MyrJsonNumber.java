@@ -12,6 +12,18 @@ public final class MyrJsonNumber implements JsonNumber {
 		this.value = value;
 	}
 
+	public MyrJsonNumber(final BigInteger value) {
+		this.value = new BigDecimal(value);
+	}
+
+	public MyrJsonNumber(final double value) {
+		this.value = BigDecimal.valueOf(value);
+	}
+
+	public MyrJsonNumber(final long value) {
+		this.value = BigDecimal.valueOf(value);
+	}
+
 	@Override
 	public BigDecimal bigDecimalValue() {
 		return value;

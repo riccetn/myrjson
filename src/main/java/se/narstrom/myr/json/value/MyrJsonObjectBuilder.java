@@ -39,12 +39,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final double value) {
-		return add(name, new MyrJsonNumber(BigDecimal.valueOf(value)));
+		return add(name, new MyrJsonNumber(value));
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final int value) {
-		return add(name, new MyrJsonNumber(BigDecimal.valueOf(value)));
+		return add(name, new MyrJsonNumber(value));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final long value) {
-		return add(name, new MyrJsonNumber(BigDecimal.valueOf(value)));
+		return add(name, new MyrJsonNumber(value));
 	}
 
 	@Override

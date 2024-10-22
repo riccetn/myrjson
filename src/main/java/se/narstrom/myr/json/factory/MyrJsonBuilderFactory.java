@@ -89,13 +89,13 @@ public final class MyrJsonBuilderFactory implements JsonBuilderFactory {
 			case String str -> new MyrJsonString(str);
 			case BigDecimal val -> new MyrJsonNumber(val);
 			case BigInteger val -> new MyrJsonNumber(new BigDecimal(val));
-			case Double val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Float val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Long val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Integer val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Short val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Byte val -> new MyrJsonNumber(BigDecimal.valueOf(val));
-			case Number val -> new MyrJsonNumber(BigDecimal.valueOf(val.longValue()));
+			case Double val -> new MyrJsonNumber(val);
+			case Float val -> new MyrJsonNumber(val);
+			case Long val -> new MyrJsonNumber(val);
+			case Integer val -> new MyrJsonNumber(val);
+			case Short val -> new MyrJsonNumber(val);
+			case Byte val -> new MyrJsonNumber(val);
+			case Number val -> new MyrJsonNumber(val.longValue());
 			default -> throw new IllegalArgumentException();
 		};
 	}
