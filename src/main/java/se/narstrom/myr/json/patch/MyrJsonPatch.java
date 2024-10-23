@@ -1,12 +1,14 @@
 package se.narstrom.myr.json.patch;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collector;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonBuilderFactory;
+import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonPatch;
@@ -56,7 +58,8 @@ public final class MyrJsonPatch implements JsonPatch {
 				case REMOVE -> t = op.path().remove(t);
 				case REPLACE -> t = op.path.replace(t, op.value());
 				case TEST -> {
-					// FIXME: Implement this
+					if(!Objects.equals(op.path().getValue(t), op.value()))
+						throw new JsonException("TEST failed");
 				}
 			}
 			LOG.info("apply() target = " + t);
