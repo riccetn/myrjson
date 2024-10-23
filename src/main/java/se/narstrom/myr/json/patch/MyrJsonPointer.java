@@ -7,26 +7,33 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
+import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonPointer implements JsonPointer {
 	private static final Pattern PATTERN_INDEX = Pattern.compile("(0|[1-9][0-9]*)");
 
+	private final MyrJsonContext context;
+
 	private final List<String> path;
 
-	public MyrJsonPointer(final String pointer) {
+	public MyrJsonPointer(final String pointer, final MyrJsonContext context) {
 		this.path = parse(pointer);
+		this.context = context;
 	}
 
 	@Override
 	public <T extends JsonStructure> T add(final T target, final JsonValue value) {
-		// TODO Auto-generated method stub
-		return null;
+		if (path.isEmpty())
+			return (T) value;
+		return (T) addToStructure(target, 0, value);
 	}
 
 	@Override
@@ -73,6 +80,51 @@ public final class MyrJsonPointer implements JsonPointer {
 		}
 
 		return sb.toString();
+	}
+
+	private JsonArray addToArray(final JsonArray target, final int pathIndex, final JsonValue value) {
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (pathIndex == path.size() - 1 && Objects.equals(path.get(pathIndex), "-")) {
+			builder.add(value);
+			return builder.build();
+		}
+	
+		if (!PATTERN_INDEX.matcher(key).matches())
+			throw new JsonException("Not an array index");
+		final int index = Integer.parseUnsignedInt(key);
+	
+		Objects.checkIndex(index, target.size());
+	
+		if (pathIndex == path.size() - 1) {
+			builder.add(index, value);
+		} else {
+			final JsonValue next = target.get(index);
+			builder.set(index, addToStructure((JsonStructure) next, pathIndex + 1, value));
+		}
+		return builder.build();
+	}
+
+	private JsonObject addToObject(final JsonObject target, final int pathIndex, final JsonValue value) {
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (pathIndex == path.size() - 1) {
+			builder.add(key, value);
+		} else {
+			final JsonValue next = target.get(key);
+			builder.add(key, addToStructure((JsonStructure) next, pathIndex + 1, value));
+		}
+		return builder.build();
+	}
+
+	private JsonStructure addToStructure(final JsonStructure target, final int pathIndex, final JsonValue value) {
+		return switch (target.getValueType()) {
+			case ARRAY -> addToArray((JsonArray) target, 0, value);
+			case OBJECT -> addToObject((JsonObject) target, 0, value);
+			default -> throw new JsonException("Path: cannot find " + this + " in " + target);
+		};
 	}
 
 	private JsonValue resolve(final JsonStructure target) {

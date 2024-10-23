@@ -150,7 +150,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonPointer createPointer(final String pointer) {
-		return new MyrJsonPointer(pointer);
+		return new MyrJsonPointer(pointer, defaultContext);
 	}
 
 	@Override
@@ -193,7 +193,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonNumber createValue(final long value) {
-		return new MyrJsonNumber(Balue);
+		return new MyrJsonNumber(value);
 	}
 
 	@Override
