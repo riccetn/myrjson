@@ -11,6 +11,7 @@ import jakarta.json.JsonPatchBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.spi.JsonProvider;
 import se.narstrom.myr.json.patch.MyrJsonPatch.OperationData;
+import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
@@ -43,7 +44,7 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatchBuilder add(final String path, final String value) {
-		return add(path, value);
+		return add(path, new MyrJsonString(value));
 	}
 
 	@Override
