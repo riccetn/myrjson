@@ -66,7 +66,7 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatchBuilder remove(final String path) {
-		operationList.add(new OperationData(Operation.REMOVE, null, null, null));
+		operationList.add(new OperationData(Operation.REMOVE, provider.createPointer(path), null, null));
 		return this;
 	}
 
