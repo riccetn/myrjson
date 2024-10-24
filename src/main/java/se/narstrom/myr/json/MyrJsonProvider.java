@@ -72,7 +72,7 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonPatch createDiff(final JsonStructure source, final JsonStructure target) {
-		return new MyrJsonPatch(source, target, this, createBuilderFactory(Map.of()));
+		return new MyrJsonPatch(source, target, defaultContext);
 	}
 
 	@Override
@@ -140,12 +140,12 @@ public final class MyrJsonProvider extends JsonProvider {
 
 	@Override
 	public JsonPatch createPatch(final JsonArray array) {
-		return new MyrJsonPatch(array, this, createBuilderFactory(Map.of()));
+		return new MyrJsonPatch(array, defaultContext);
 	}
 
 	@Override
 	public JsonPatchBuilder createPatchBuilder() {
-		return new MyrJsonPatchBuilder(this, createBuilderFactory(Map.of()));
+		return new MyrJsonPatchBuilder(defaultContext);
 	}
 
 	@Override

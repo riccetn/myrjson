@@ -4,26 +4,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonPatch;
 import jakarta.json.JsonPatch.Operation;
 import jakarta.json.JsonPatchBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
+import se.narstrom.myr.json.MyrJsonContext;
 import se.narstrom.myr.json.patch.MyrJsonPatch.OperationData;
+import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
-	private final JsonProvider provider;
-
-	private final JsonBuilderFactory builderFactory;
+	private final MyrJsonContext context;
 
 	private final List<OperationData> operationList = new ArrayList<>();
 
-	public MyrJsonPatchBuilder(final JsonProvider provider, final JsonBuilderFactory builderFactory) {
-		this.provider = provider;
-		this.builderFactory = builderFactory;
+	public MyrJsonPatchBuilder(final MyrJsonContext context) {
+		this.context = context;
 	}
 
 	@Override
@@ -33,12 +30,12 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatchBuilder add(final String path, final int value) {
-		return add(path, provider.createValue(value));
+		return add(path, new MyrJsonNumber(value));
 	}
 
 	@Override
 	public JsonPatchBuilder add(final String path, final JsonValue value) {
-		operationList.add(new OperationData(Operation.ADD, provider.createPointer(path), value, null));
+		operationList.add(new OperationData(Operation.ADD, new MyrJsonPointer(path, context), value, null));
 		return this;
 	}
 
@@ -49,24 +46,24 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatch build() {
-		return new MyrJsonPatch(Collections.unmodifiableList(operationList), provider, builderFactory);
+		return new MyrJsonPatch(Collections.unmodifiableList(operationList), context);
 	}
 
 	@Override
 	public JsonPatchBuilder copy(final String path, final String from) {
-		operationList.add(new OperationData(Operation.COPY, provider.createPointer(path), null, provider.createPointer(from)));
+		operationList.add(new OperationData(Operation.COPY, new MyrJsonPointer(path, context), null, new MyrJsonPointer(from, context)));
 		return this;
 	}
 
 	@Override
 	public JsonPatchBuilder move(final String path, final String from) {
-		operationList.add(new OperationData(Operation.MOVE, provider.createPointer(path), null, provider.createPointer(from)));
+		operationList.add(new OperationData(Operation.MOVE, new MyrJsonPointer(path, context), null, new MyrJsonPointer(from, context)));
 		return null;
 	}
 
 	@Override
 	public JsonPatchBuilder remove(final String path) {
-		operationList.add(new OperationData(Operation.REMOVE, provider.createPointer(path), null, null));
+		operationList.add(new OperationData(Operation.REMOVE, new MyrJsonPointer(path, context), null, null));
 		return this;
 	}
 
@@ -77,18 +74,18 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatchBuilder replace(final String path, final int value) {
-		return replace(path, provider.createValue(value));
+		return replace(path, new MyrJsonNumber(value));
 	}
 
 	@Override
 	public JsonPatchBuilder replace(String path, JsonValue value) {
-		operationList.add(new OperationData(Operation.REPLACE, provider.createPointer(path), value, null));
+		operationList.add(new OperationData(Operation.REPLACE, new MyrJsonPointer(path, context), value, null));
 		return this;
 	}
 
 	@Override
 	public JsonPatchBuilder replace(final String path, final String value) {
-		return replace(path, provider.createValue(value));
+		return replace(path, new MyrJsonString(value));
 	}
 
 	@Override
@@ -98,18 +95,18 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	@Override
 	public JsonPatchBuilder test(final String path, final int value) {
-		return test(path, provider.createValue(value));
+		return test(path, new MyrJsonNumber(value));
 	}
 
 	@Override
 	public JsonPatchBuilder test(final String path, final JsonValue value) {
-		operationList.add(new OperationData(Operation.TEST, provider.createPointer(path), value, null));
+		operationList.add(new OperationData(Operation.TEST, new MyrJsonPointer(path, context), value, null));
 		return this;
 	}
 
 	@Override
 	public JsonPatchBuilder test(final String path, final String value) {
-		return test(path, provider.createValue(value));
+		return test(path, new MyrJsonString(value));
 	}
 
 }
