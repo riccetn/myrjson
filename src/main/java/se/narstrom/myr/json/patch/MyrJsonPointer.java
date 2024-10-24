@@ -136,7 +136,7 @@ public final class MyrJsonPointer implements JsonPointer {
 			throw new JsonException("Not an array index");
 		final int index = Integer.parseUnsignedInt(key);
 	
-		Objects.checkIndex(index, target.size());
+		Objects.checkIndex(index, target.size()+1);
 	
 		if (pathIndex == path.size() - 1) {
 			builder.add(index, value);
@@ -161,6 +161,8 @@ public final class MyrJsonPointer implements JsonPointer {
 	}
 
 	private JsonStructure addToStructure(final JsonStructure target, final int pathIndex, final JsonValue value) {
+		if(target == null)
+			throw new JsonException("No item");
 		return switch (target.getValueType()) {
 			case ARRAY -> addToArray((JsonArray) target, 0, value);
 			case OBJECT -> addToObject((JsonObject) target, 0, value);
