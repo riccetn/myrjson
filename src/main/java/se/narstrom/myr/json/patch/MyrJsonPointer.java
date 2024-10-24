@@ -66,7 +66,8 @@ public final class MyrJsonPointer implements JsonPointer {
 			throw new JsonException("Not an array index");
 		final int index = Integer.parseUnsignedInt(key);
 	
-		Objects.checkIndex(index, target.size());
+		if(index < 0 || index >= target.size())
+			throw new JsonException("Index out of bounds");
 	
 		if (pathIndex == path.size() - 1) {
 			builder.remove(index);
@@ -82,6 +83,8 @@ public final class MyrJsonPointer implements JsonPointer {
 		final String key = path.get(pathIndex);
 	
 		if (pathIndex == path.size() - 1) {
+			if(!target.containsKey(key))
+				throw new JsonException("Removing on-existing mapping from object");
 			builder.remove(key);
 		} else {
 			final JsonValue next = target.get(key);
