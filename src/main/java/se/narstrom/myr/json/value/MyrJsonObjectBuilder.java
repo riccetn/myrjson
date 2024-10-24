@@ -16,7 +16,7 @@ import se.narstrom.myr.json.MyrJsonContext;
 public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 	private final MyrJsonContext context;
 
-	private final Map<String, Object> map = new LinkedHashMap<>();
+	private final Map<String, JsonValue> map = new LinkedHashMap<>();
 
 	public MyrJsonObjectBuilder(final MyrJsonContext context) {
 		this.context = context;
@@ -49,18 +49,12 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObjectBuilder add(final String name, final JsonArrayBuilder builder) {
-		Objects.requireNonNull(name);
-		Objects.requireNonNull(builder);
-		map.put(name, context.defaultBuilderFactory().createArrayBuilder(builder.build()));
-		return this;
+		return add(name, builder.build());
 	}
 
 	@Override
 	public JsonObjectBuilder add(final String name, final JsonObjectBuilder builder) {
-		Objects.requireNonNull(name);
-		Objects.requireNonNull(builder);
-		map.put(name, context.defaultBuilderFactory().createObjectBuilder(builder.build()));
-		return this;
+		return add(name, builder.build());
 	}
 
 	@Override
@@ -68,17 +62,11 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 		Objects.requireNonNull(name);
 		Objects.requireNonNull(value);
 
-		final Object objToAdd = switch (value.getValueType()) {
-			case ARRAY -> context.defaultBuilderFactory().createArrayBuilder(value.asJsonArray());
-			case OBJECT -> context.defaultBuilderFactory().createObjectBuilder(value.asJsonObject());
-			default -> value;
-		};
-
 		switch (context.getKeyStrategy()) {
-			case FIRST -> map.putIfAbsent(name, objToAdd);
-			case LAST -> map.put(name, objToAdd);
+			case FIRST -> map.putIfAbsent(name, value);
+			case LAST -> map.put(name, value);
 			case NONE -> {
-				if (map.putIfAbsent(name, objToAdd) != null)
+				if (map.putIfAbsent(name, value) != null)
 					throw new JsonException("Duplicate key '" + name + "'");
 			}
 		}
@@ -110,17 +98,7 @@ public final class MyrJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObject build() {
-		final Map<String, JsonValue> result = LinkedHashMap.newLinkedHashMap(map.size());
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			final JsonValue value = switch (entry.getValue()) {
-				case JsonArrayBuilder builder -> builder.build();
-				case JsonObjectBuilder builder -> builder.build();
-				case JsonValue val -> val;
-				default -> throw new AssertionError();
-			};
-			result.put(entry.getKey(), value);
-		}
-		final JsonObject obj = new MyrJsonObject(result);
+		final JsonObject obj = new MyrJsonObject(map);
 		map.clear();
 		return obj;
 	}

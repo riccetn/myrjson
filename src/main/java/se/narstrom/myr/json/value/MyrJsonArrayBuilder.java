@@ -15,7 +15,7 @@ import se.narstrom.myr.json.MyrJsonContext;
 public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 	private final MyrJsonContext context;
 
-	private final List<Object> list = new ArrayList<>();
+	private final List<JsonValue> list = new ArrayList<>();
 
 	public MyrJsonArrayBuilder(final MyrJsonContext context) {
 		this.context = context;
@@ -77,25 +77,19 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(int index, final JsonArrayBuilder builder) {
-		list.add(index, context.defaultBuilderFactory().createArrayBuilder(builder.build()));
-		return this;
+		return add(index, builder.build());
 	}
 
 	@Override
 	public JsonArrayBuilder add(int index, final JsonObjectBuilder builder) {
-		list.add(index, context.defaultBuilderFactory().createObjectBuilder(builder.build()));
-		return this;
+		return add(index, builder.build());
 	}
 
 	@Override
 	public JsonArrayBuilder add(final int index, final JsonValue value) {
 		Objects.checkIndex(index, list.size() + 1);
 		Objects.requireNonNull(value);
-		switch (value.getValueType()) {
-			case ARRAY -> add(index, context.defaultBuilderFactory().createArrayBuilder(value.asJsonArray()));
-			case OBJECT -> add(index, context.defaultBuilderFactory().createObjectBuilder(value.asJsonObject()));
-			default -> list.add(index, value);
-		}
+		list.add(index, value);
 		return this;
 	}
 
@@ -112,14 +106,12 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder add(final JsonArrayBuilder builder) {
-		list.add(context.defaultBuilderFactory().createArrayBuilder(builder.build()));
-		return this;
+		return add(builder.build());
 	}
 
 	@Override
 	public JsonArrayBuilder add(final JsonObjectBuilder builder) {
-		list.add(context.defaultBuilderFactory().createObjectBuilder(builder.build()));
-		return this;
+		return add(builder.build());
 	}
 
 	@Override
@@ -158,16 +150,7 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArray build() {
-		final List<JsonValue> result = new ArrayList<>(list.size());
-		for (final Object value : list) {
-			switch (value) {
-				case JsonArrayBuilder builder -> result.add(builder.build());
-				case JsonObjectBuilder builder -> result.add(builder.build());
-				case JsonValue val -> result.add(val);
-				default -> throw new AssertionError();
-			}
-		}
-		return new MyrJsonArray(result);
+		return new MyrJsonArray(list);
 	}
 
 	@Override
@@ -206,14 +189,12 @@ public final class MyrJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public JsonArrayBuilder set(int index, final JsonArrayBuilder builder) {
-		list.set(index, context.defaultBuilderFactory().createArrayBuilder(builder.build()));
-		return this;
+		return set(index, builder.build());
 	}
 
 	@Override
 	public JsonArrayBuilder set(int index, final JsonObjectBuilder builder) {
-		list.set(index, context.defaultBuilderFactory().createObjectBuilder(builder.build()));
-		return this;
+		return set(index, builder.build());
 	}
 
 	@Override
