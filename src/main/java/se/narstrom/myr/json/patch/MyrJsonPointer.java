@@ -53,8 +53,49 @@ public final class MyrJsonPointer implements JsonPointer {
 
 	@Override
 	public <T extends JsonStructure> T remove(final T target) {
-		// TODO Auto-generated method stub
-		return null;
+		if(path.isEmpty())
+			throw new JsonException("Cannot remove root");
+		return (T) removeFromStructure(target, 0);
+	}
+
+	private JsonArray removeFromArray(final JsonArray target, final int pathIndex) {
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder(target);
+		final String key = path.get(pathIndex);
+
+		if (!PATTERN_INDEX.matcher(key).matches())
+			throw new JsonException("Not an array index");
+		final int index = Integer.parseUnsignedInt(key);
+	
+		Objects.checkIndex(index, target.size());
+	
+		if (pathIndex == path.size() - 1) {
+			builder.remove(index);
+		} else {
+			final JsonValue next = target.get(index);
+			builder.set(index, removeFromStructure((JsonStructure) next, pathIndex + 1));
+		}
+		return builder.build();
+	}
+
+	private JsonObject removeFromObject(final JsonObject target, final int pathIndex) {
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (pathIndex == path.size() - 1) {
+			builder.remove(key);
+		} else {
+			final JsonValue next = target.get(key);
+			builder.add(key, removeFromStructure((JsonStructure) next, pathIndex + 1));
+		}
+		return builder.build();
+	}
+
+	private JsonStructure removeFromStructure(final JsonStructure target, final int pathIndex) {
+		return switch(target.getValueType()) {
+			case ARRAY -> removeFromArray((JsonArray) target, pathIndex);
+			case OBJECT -> removeFromObject((JsonObject) target, pathIndex);
+			default -> throw new JsonException("Not a structure");
+		};
 	}
 
 	@Override
