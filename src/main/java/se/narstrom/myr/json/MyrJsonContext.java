@@ -66,7 +66,7 @@ public final class MyrJsonContext {
 
 	public KeyStrategy getKeyStrategy() {
 		if (keyStrategy == null)
-			return KeyStrategy.FIRST;
+			return KeyStrategy.LAST;
 		else
 			return this.keyStrategy;
 	}
