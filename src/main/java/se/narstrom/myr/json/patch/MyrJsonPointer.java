@@ -58,49 +58,6 @@ public final class MyrJsonPointer implements JsonPointer {
 		return (T) removeFromStructure(target, 0);
 	}
 
-	private JsonArray removeFromArray(final JsonArray target, final int pathIndex) {
-		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder(target);
-		final String key = path.get(pathIndex);
-
-		if (!PATTERN_INDEX.matcher(key).matches())
-			throw new JsonException("Not an array index");
-		final int index = Integer.parseUnsignedInt(key);
-	
-		if(index < 0 || index >= target.size())
-			throw new JsonException("Index out of bounds");
-	
-		if (pathIndex == path.size() - 1) {
-			builder.remove(index);
-		} else {
-			final JsonValue next = target.get(index);
-			builder.set(index, removeFromStructure((JsonStructure) next, pathIndex + 1));
-		}
-		return builder.build();
-	}
-
-	private JsonObject removeFromObject(final JsonObject target, final int pathIndex) {
-		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
-		final String key = path.get(pathIndex);
-	
-		if (pathIndex == path.size() - 1) {
-			if(!target.containsKey(key))
-				throw new JsonException("Removing on-existing mapping from object");
-			builder.remove(key);
-		} else {
-			final JsonValue next = target.get(key);
-			builder.add(key, removeFromStructure((JsonStructure) next, pathIndex + 1));
-		}
-		return builder.build();
-	}
-
-	private JsonStructure removeFromStructure(final JsonStructure target, final int pathIndex) {
-		return switch(target.getValueType()) {
-			case ARRAY -> removeFromArray((JsonArray) target, pathIndex);
-			case OBJECT -> removeFromObject((JsonObject) target, pathIndex);
-			default -> throw new JsonException("Not a structure");
-		};
-	}
-
 	@Override
 	public <T extends JsonStructure> T replace(final T target, final JsonValue value) {
 		// TODO Auto-generated method stub
@@ -170,6 +127,49 @@ public final class MyrJsonPointer implements JsonPointer {
 			case ARRAY -> addToArray((JsonArray) target, 0, value);
 			case OBJECT -> addToObject((JsonObject) target, 0, value);
 			default -> throw new JsonException("Path: cannot find " + this + " in " + target);
+		};
+	}
+
+	private JsonArray removeFromArray(final JsonArray target, final int pathIndex) {
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (!PATTERN_INDEX.matcher(key).matches())
+			throw new JsonException("Not an array index");
+		final int index = Integer.parseUnsignedInt(key);
+	
+		if(index < 0 || index >= target.size())
+			throw new JsonException("Index out of bounds");
+	
+		if (pathIndex == path.size() - 1) {
+			builder.remove(index);
+		} else {
+			final JsonValue next = target.get(index);
+			builder.set(index, removeFromStructure((JsonStructure) next, pathIndex + 1));
+		}
+		return builder.build();
+	}
+
+	private JsonObject removeFromObject(final JsonObject target, final int pathIndex) {
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (pathIndex == path.size() - 1) {
+			if(!target.containsKey(key))
+				throw new JsonException("Removing on-existing mapping from object");
+			builder.remove(key);
+		} else {
+			final JsonValue next = target.get(key);
+			builder.add(key, removeFromStructure((JsonStructure) next, pathIndex + 1));
+		}
+		return builder.build();
+	}
+
+	private JsonStructure removeFromStructure(final JsonStructure target, final int pathIndex) {
+		return switch(target.getValueType()) {
+			case ARRAY -> removeFromArray((JsonArray) target, pathIndex);
+			case OBJECT -> removeFromObject((JsonObject) target, pathIndex);
+			default -> throw new JsonException("Not a structure");
 		};
 	}
 
