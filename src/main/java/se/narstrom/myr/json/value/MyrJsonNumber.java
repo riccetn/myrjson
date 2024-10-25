@@ -2,6 +2,7 @@ package se.narstrom.myr.json.value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Objects;
 
 import jakarta.json.JsonNumber;
 
@@ -9,6 +10,7 @@ public final class MyrJsonNumber implements JsonNumber {
 	private final BigDecimal value;
 
 	public MyrJsonNumber(final BigDecimal value) {
+		Objects.requireNonNull(value);
 		this.value = value;
 	}
 

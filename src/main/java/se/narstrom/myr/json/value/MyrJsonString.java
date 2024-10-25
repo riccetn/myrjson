@@ -8,6 +8,7 @@ public final class MyrJsonString implements JsonString {
 	private final String value;
 
 	public MyrJsonString(final String value) {
+		Objects.requireNonNull(value);
 		this.value = value;
 	}
 
