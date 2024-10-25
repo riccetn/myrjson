@@ -111,7 +111,7 @@ public final class MyrJsonPointer implements JsonPointer {
 	private JsonObject addToObject(final JsonObject target, final int pathIndex, final JsonValue value) {
 		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
 		final String key = path.get(pathIndex);
-	
+
 		if (pathIndex == path.size() - 1) {
 			builder.add(key, value);
 		} else {
@@ -125,8 +125,8 @@ public final class MyrJsonPointer implements JsonPointer {
 		if(target == null)
 			throw new JsonException("No item");
 		return switch (target.getValueType()) {
-			case ARRAY -> addToArray((JsonArray) target, 0, value);
-			case OBJECT -> addToObject((JsonObject) target, 0, value);
+			case ARRAY -> addToArray((JsonArray) target, pathIndex, value);
+			case OBJECT -> addToObject((JsonObject) target, pathIndex, value);
 			default -> throw new JsonException("Path: cannot find " + this + " in " + target);
 		};
 	}
@@ -210,8 +210,8 @@ public final class MyrJsonPointer implements JsonPointer {
 		if(target == null)
 			throw new JsonException("No item");
 		return switch (target.getValueType()) {
-			case ARRAY -> replaceInArray((JsonArray) target, 0, value);
-			case OBJECT -> replaceInObject((JsonObject) target, 0, value);
+			case ARRAY -> replaceInArray((JsonArray) target, pathIndex, value);
+			case OBJECT -> replaceInObject((JsonObject) target, pathIndex, value);
 			default -> throw new JsonException("Path: cannot find " + this + " in " + target);
 		};
 	}

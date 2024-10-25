@@ -21,8 +21,6 @@ import se.narstrom.myr.json.value.MyrJsonArrayBuilder;
 import se.narstrom.myr.json.value.MyrJsonObjectBuilder;
 
 public final class MyrJsonPatch implements JsonPatch {
-	private final Logger LOG = Logger.getLogger(MyrJsonPatch.class.getName());
-
 	private final MyrJsonContext context;
 
 	private final List<OperationData> operations;
@@ -43,10 +41,8 @@ public final class MyrJsonPatch implements JsonPatch {
 
 	@Override
 	public <T extends JsonStructure> T apply(final T target) {
-		LOG.info("apply() target = " + target);
 		T t = target;
 		for (final OperationData op : operations) {
-			LOG.info("operation = " + op);
 			switch (op.op()) {
 				case ADD -> t = op.path().add(t, op.value());
 				case COPY -> t = op.path().add(t, op.from().getValue(t));
@@ -62,7 +58,6 @@ public final class MyrJsonPatch implements JsonPatch {
 						throw new JsonException("TEST failed");
 				}
 			}
-			LOG.info("apply() target = " + t);
 		}
 
 		return t;
