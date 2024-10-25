@@ -60,8 +60,9 @@ public final class MyrJsonPointer implements JsonPointer {
 
 	@Override
 	public <T extends JsonStructure> T replace(final T target, final JsonValue value) {
-		// TODO Auto-generated method stub
-		return null;
+		if(path.isEmpty())
+			return (T) value;
+		return (T) replaceInStructure(target, 0, value);
 	}
 
 	@Override
@@ -170,6 +171,48 @@ public final class MyrJsonPointer implements JsonPointer {
 			case ARRAY -> removeFromArray((JsonArray) target, pathIndex);
 			case OBJECT -> removeFromObject((JsonObject) target, pathIndex);
 			default -> throw new JsonException("Not a structure");
+		};
+	}
+
+	private JsonArray replaceInArray(final JsonArray target, final int pathIndex, final JsonValue value) {
+		final JsonArrayBuilder builder = context.defaultBuilderFactory().createArrayBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (!PATTERN_INDEX.matcher(key).matches())
+			throw new JsonException("Not an array index");
+		final int index = Integer.parseUnsignedInt(key);
+	
+		Objects.checkIndex(index, target.size()+1);
+	
+		if (pathIndex == path.size() - 1) {
+			builder.set(index, value);
+		} else {
+			final JsonValue next = target.get(index);
+			builder.set(index, replaceInStructure((JsonStructure) next, pathIndex + 1, value));
+		}
+		return builder.build();
+	}
+
+	private JsonObject replaceInObject(final JsonObject target, final int pathIndex, final JsonValue value) {
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
+		final String key = path.get(pathIndex);
+	
+		if (pathIndex == path.size() - 1) {
+			builder.add(key, value);
+		} else {
+			final JsonValue next = target.get(key);
+			builder.add(key, replaceInStructure((JsonStructure) next, pathIndex + 1, value));
+		}
+		return builder.build();
+	}
+
+	private JsonStructure replaceInStructure(final JsonStructure target, final int pathIndex, final JsonValue value) {
+		if(target == null)
+			throw new JsonException("No item");
+		return switch (target.getValueType()) {
+			case ARRAY -> replaceInArray((JsonArray) target, 0, value);
+			case OBJECT -> replaceInObject((JsonObject) target, 0, value);
+			default -> throw new JsonException("Path: cannot find " + this + " in " + target);
 		};
 	}
 
