@@ -64,7 +64,7 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 	@Override
 	public JsonPatchBuilder move(final String path, final String from) {
 		operationList.add(new OperationData(Operation.MOVE, new MyrJsonPointer(path, context), null, new MyrJsonPointer(from, context)));
-		return null;
+		return this;
 	}
 
 	@Override
