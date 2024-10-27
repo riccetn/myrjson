@@ -148,6 +148,10 @@ public final class MyrJsonProvider extends JsonProvider {
 		return new MyrJsonPatchBuilder(defaultContext);
 	}
 
+	public JsonPatchBuilder createPatchBuilder(final JsonArray array) {
+		return new MyrJsonPatchBuilder(array, defaultContext);
+	}
+
 	@Override
 	public JsonPointer createPointer(final String pointer) {
 		return new MyrJsonPointer(pointer, defaultContext);

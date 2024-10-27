@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.json.JsonArray;
 import jakarta.json.JsonPatch;
 import jakarta.json.JsonPatch.Operation;
 import jakarta.json.JsonPatchBuilder;
@@ -21,6 +22,11 @@ public final class MyrJsonPatchBuilder implements JsonPatchBuilder {
 
 	public MyrJsonPatchBuilder(final MyrJsonContext context) {
 		this.context = context;
+	}
+
+	public MyrJsonPatchBuilder(final JsonArray array, final MyrJsonContext context) {
+		this(context);
+		operationList.addAll(array.stream().map(val -> MyrJsonPatch.operationFromObject(val.asJsonObject(), context)).toList());
 	}
 
 	@Override

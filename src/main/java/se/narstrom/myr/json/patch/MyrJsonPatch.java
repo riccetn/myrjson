@@ -2,12 +2,10 @@ package se.narstrom.myr.json.patch;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collector;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
@@ -15,7 +13,6 @@ import jakarta.json.JsonPatch;
 import jakarta.json.JsonPointer;
 import jakarta.json.JsonStructure;
 import jakarta.json.JsonValue;
-import jakarta.json.spi.JsonProvider;
 import se.narstrom.myr.json.MyrJsonContext;
 import se.narstrom.myr.json.value.MyrJsonArrayBuilder;
 import se.narstrom.myr.json.value.MyrJsonObjectBuilder;
@@ -79,7 +76,7 @@ public final class MyrJsonPatch implements JsonPatch {
 		return objectBuilder.build();
 	}
 
-	private static OperationData operationFromObject(final JsonObject object, final MyrJsonContext context) {
+	static OperationData operationFromObject(final JsonObject object, final MyrJsonContext context) {
 		final Operation op = Operation.fromOperationName(object.getString("op"));
 		final JsonPointer path = new MyrJsonPointer(object.getString("path"), context);
 		final JsonValue value = switch (op) {
