@@ -195,9 +195,13 @@ public final class MyrJsonPointer implements JsonPointer {
 	}
 
 	private JsonObject replaceInObject(final JsonObject target, final int pathIndex, final JsonValue value) {
-		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
 		final String key = path.get(pathIndex);
-	
+
+		if(!target.containsKey(key))
+			throw new JsonException("Target does not exist");
+
+		final JsonObjectBuilder builder = context.defaultBuilderFactory().createObjectBuilder(target);
+
 		if (pathIndex == path.size() - 1) {
 			builder.add(key, value);
 		} else {
