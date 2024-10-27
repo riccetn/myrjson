@@ -182,7 +182,8 @@ public final class MyrJsonPointer implements JsonPointer {
 			throw new JsonException("Not an array index");
 		final int index = Integer.parseUnsignedInt(key);
 	
-		Objects.checkIndex(index, target.size()+1);
+		if(index < 0 || index >= target.size())
+			throw new JsonException("Out of index");
 	
 		if (pathIndex == path.size() - 1) {
 			builder.set(index, value);
