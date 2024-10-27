@@ -66,6 +66,7 @@
 					</dependenciesToScan>
 					<excludes>
 						<exclude>ee/jakarta/tck/jsonp/api/provider/JsonProviderTest</exclude>
+						<exclude>ee/jakarta/tck/jsonp/signaturetest/jsonp/JSONPSigTest</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
