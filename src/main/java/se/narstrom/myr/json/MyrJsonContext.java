@@ -31,7 +31,7 @@ public final class MyrJsonContext {
 
 	private final Object prettyPrinting;
 
-	MyrJsonContext(final Map<String, ?> config) {
+	public MyrJsonContext(final Map<String, ?> config) {
 		this.keyStrategy = (KeyStrategy) config.get(JsonConfig.KEY_STRATEGY);
 		this.prettyPrinting = config.get(JsonGenerator.PRETTY_PRINTING);
 	}

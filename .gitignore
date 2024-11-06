@@ -3,5 +3,8 @@
 .settings/
 .project
 
+# Jazzer
+.cifuzz-corpus/
+
 # Maven
 target/

@@ -15,7 +15,7 @@ import se.narstrom.myr.json.MyrJsonContext;
 
 public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	private final Deque<State> stack = new ArrayDeque<>();
-	
+
 	private final Reader in;
 
 	private Event event = null;
@@ -241,7 +241,11 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 					case 'u' -> {
 						char[] chs = new char[4];
 						readChars(chs);
-						sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
+						try {
+							sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
+						} catch (final NumberFormatException ex) {
+							throw new JsonParsingException(ex.getMessage(), ex, location);
+						}
 					}
 					default -> throw new JsonParsingException("Unknown escape character " + ch, location);
 				}
@@ -258,7 +262,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			return -1;
 		return buf[bufp];
 	}
-	
+
 	private int read() throws IOException {
 		maybeFillBuffer();
 		if (buflen == -1)
@@ -420,7 +424,12 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			readDigits(sb);
 		}
 
-		numberValue = new BigDecimal(sb.toString());
+		try {
+			numberValue = new BigDecimal(sb.toString());
+		} catch (final NumberFormatException ex) {
+			throw new JsonParsingException(ex.getMessage(), ex, location);
+		}
+
 		state = nextState;
 		event = Event.VALUE_NUMBER;
 	}
