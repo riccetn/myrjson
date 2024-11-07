@@ -241,11 +241,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 					case 'u' -> {
 						char[] chs = new char[4];
 						readChars(chs);
-						try {
-							sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
-						} catch (final NumberFormatException ex) {
-							throw new JsonParsingException(ex.getMessage(), ex, location);
-						}
+						for (int i = 0; i < 4; ++i)
+							if (!isHexDigit(chs[i]))
+								throw new JsonParsingException("Invalid unicode escape sequence \"\\u" + new String(chs) + "\"", location);
+						sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
 					}
 					default -> throw new JsonParsingException("Unknown escape character " + ch, location);
 				}
@@ -254,6 +253,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			}
 		}
 		stringValue = sb.toString();
+	}
+
+	private boolean isHexDigit(final char ch) {
+		return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'F') || ('a' <= ch && ch <= 'f');
 	}
 
 	private int peekChar() throws IOException {
