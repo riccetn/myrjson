@@ -266,7 +266,7 @@ public final class MyrJsonPointer implements JsonPointer {
 				switch (ch2) {
 					case '0' -> sb.append('~');
 					case '1' -> sb.append('/');
-					default -> throw new JsonException("Unknown escape sequence '~" + ch2 + "'");
+					default -> sb.append('~').append(ch2);
 				}
 			} else if (ch == '/') {
 				result.add(sb.toString());

@@ -11,14 +11,14 @@
 			<dependency>
 				<groupId>jakarta.platform</groupId>
 				<artifactId>jakarta.jakartaee-bom</artifactId>
-				<version>10.0.0</version>
+				<version>11.0.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.11.2</version>
+				<version>5.13.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -32,11 +32,6 @@
 		</dependency>
 
 		<!-- TEST DEPENDENCIES -->
-		<dependency>
-			<groupId>com.code-intelligence</groupId>
-			<artifactId>jazzer-junit</artifactId>
-			<version>0.22.1</version>
-		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
@@ -55,7 +50,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
+				<version>3.14.0</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<release>21</release>
@@ -64,7 +59,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.5.3</version>
 				<configuration>
 					<dependenciesToScan>
 						<dependency>jakarta.json:jakarta.json-tck-tests</dependency>
