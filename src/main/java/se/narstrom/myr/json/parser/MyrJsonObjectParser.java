@@ -23,6 +23,8 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 
 	private MyrJsonParserBase subParser;
 
+	private Event event;
+
 	public MyrJsonObjectParser(final JsonObject object, final MyrJsonContext context) {
 		super(context);
 		this.iterator = object.entrySet().iterator();
@@ -31,6 +33,11 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 	@Override
 	public void close() {
 		/* Nothing */
+	}
+
+	@Override
+	public Event currentEvent() {
+		return event;
 	}
 
 	@Override
@@ -69,13 +76,14 @@ public final class MyrJsonObjectParser extends MyrJsonParserBase {
 
 	@Override
 	public Event next() {
-		return switch (state) {
+		event = switch (state) {
 			case INIT -> nextInit();
 			case START -> nextStart();
 			case KEY -> nextKey();
 			case VALUE -> nextValue();
 			case END -> throw new NoSuchElementException();
 		};
+		return event;
 	}
 
 	private String getStringValue() {
