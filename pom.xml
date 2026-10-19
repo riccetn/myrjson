@@ -6,6 +6,31 @@
 	<artifactId>myrjson</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<name>MyrJSON</name>
+	<description>An implementation of the Jakarta JSON Processing API</description>
+	<url>https://github.com/riccetn/myrjson</url>
+
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License, Version 3</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.html</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:https://github.com/riccetn/myrjson.git</connection>
+		<developerConnection>scm:git:git@github.com:riccetn/myrjson.git</developerConnection>
+		<url>https://github.com/riccetn/myrjson</url>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/riccetn/myrjson</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -69,6 +94,35 @@
 						<exclude>ee/jakarta/tck/jsonp/signaturetest/jsonp/JSONPSigTest</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.4.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.12.0</version>
+				<configuration>
+					<doclint>none</doclint>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
