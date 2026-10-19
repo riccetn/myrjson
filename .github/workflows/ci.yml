@@ -13,6 +13,5 @@ jobs:
         with:
           java-version: 25
           distribution: temurin
-          architucture: x64
           cache: maven
       - run: mvn --batch-mode --update-snapshots verify
