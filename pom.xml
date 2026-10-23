@@ -114,6 +114,9 @@
 				<version>3.12.0</version>
 				<configuration>
 					<doclint>none</doclint>
+					<links>
+						<link>https://jakarta.ee/specifications/jsonp/2.1/apidocs/</link>
+					</links>
 				</configuration>
 				<executions>
 					<execution>
