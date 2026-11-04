@@ -54,8 +54,13 @@ Each benchmark runs for every combination of these parameters:
 | `streamParseReader`            | `JsonParser` from a `Reader`; every event and value is read |
 | `streamParseInputStream`       | `JsonParser` from an `InputStream` with explicit UTF-8      |
 | `streamParseInputStreamDetect` | `JsonParser` from an `InputStream` with charset detection   |
+| `streamParseJsonObject`        | `JsonParserFactory.createParser(JsonObject)` over the whole document |
+| `streamParseJsonArray`         | `JsonParserFactory.createParser(JsonArray)` over the `records` array |
 | `readTreeReader`               | `JsonReader.readValue()` from a `Reader`                    |
 | `readTreeInputStream`          | `JsonReader.readValue()` from an `InputStream` (UTF-8)      |
+
+The `streamParseJsonObject` and `streamParseJsonArray` benchmarks walk an
+object model that the implementation under test builds during setup.
 
 ### Generating (`GenerateBenchmark`)
 

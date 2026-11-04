@@ -19,6 +19,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonReaderFactory;
 import jakarta.json.JsonValue;
@@ -27,7 +29,8 @@ import jakarta.json.stream.JsonParserFactory;
 
 /**
  * Parsing benchmarks: the streaming {@link JsonParser} API and the object model
- * {@link JsonReader} API, from both character and byte input.
+ * {@link JsonReader} API, from both character and byte input, plus the
+ * {@link JsonParser} that walks an existing object model.
  */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
@@ -47,6 +50,8 @@ public class ParseBenchmark {
 	private byte[] bytes;
 	private JsonParserFactory parserFactory;
 	private JsonReaderFactory readerFactory;
+	private JsonObject object;
+	private JsonArray array;
 
 	@Setup
 	public void setup() {
@@ -55,6 +60,10 @@ public class ParseBenchmark {
 		final var provider = implementation.newProvider();
 		parserFactory = provider.createParserFactory(Map.of());
 		readerFactory = provider.createReaderFactory(Map.of());
+		try (JsonReader reader = readerFactory.createReader(new StringReader(text))) {
+			object = reader.readObject();
+		}
+		array = object.getJsonArray("records");
 	}
 
 	/** Stream all events from a {@link java.io.Reader}, consuming every value. */
@@ -77,6 +86,30 @@ public class ParseBenchmark {
 	@Benchmark
 	public void streamParseInputStreamDetect(final Blackhole bh) {
 		try (JsonParser parser = parserFactory.createParser(new ByteArrayInputStream(bytes))) {
+			consume(parser, bh);
+		}
+	}
+
+	/**
+	 * Stream all events from an existing {@link JsonObject} with
+	 * {@link JsonParserFactory#createParser(JsonObject)}, consuming every value.
+	 * The object model is built by the implementation under test during setup.
+	 */
+	@Benchmark
+	public void streamParseJsonObject(final Blackhole bh) {
+		try (JsonParser parser = parserFactory.createParser(object)) {
+			consume(parser, bh);
+		}
+	}
+
+	/**
+	 * Stream all events from an existing {@link JsonArray} (the document's
+	 * {@code records} array) with {@link JsonParserFactory#createParser(JsonArray)},
+	 * consuming every value.
+	 */
+	@Benchmark
+	public void streamParseJsonArray(final Blackhole bh) {
+		try (JsonParser parser = parserFactory.createParser(array)) {
 			consume(parser, bh);
 		}
 	}
