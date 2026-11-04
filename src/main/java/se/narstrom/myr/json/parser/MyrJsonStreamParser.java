@@ -134,8 +134,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	}
 
 	private void maybeFillBuffer() throws IOException {
-		if (bufp >= buflen)
+		if (bufp >= buflen) {
 			buflen = in.read(buf);
+			bufp = 0;
+		}
 	}
 
 	private void nextArrayComma() throws IOException {
