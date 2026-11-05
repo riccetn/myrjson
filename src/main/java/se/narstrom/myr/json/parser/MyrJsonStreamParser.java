@@ -20,8 +20,6 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private Event event = null;
 
-	private JsonLocation location = null;
-
 	private String stringValue = null;
 
 	private BigDecimal numberValue = null;
@@ -50,7 +48,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		try {
 			in.close();
 		} catch (final IOException ex) {
-			throw new JsonParsingException(ex.getMessage(), ex, location);
+			throw new JsonParsingException(ex.getMessage(), ex, getLocation());
 		}
 	}
 
@@ -68,7 +66,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	@Override
 	public JsonLocation getLocation() {
-		return location;
+		return new MyrJsonLocation(lineNo, columnNo, offset);
 	}
 
 	@Override
@@ -87,7 +85,6 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 	public Event next() {
 		try {
 			event = null;
-			location = null;
 			stringValue = null;
 			numberValue = null;
 
@@ -106,12 +103,8 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			}
 			return event;
 		} catch (final IOException ex) {
-			throw new JsonParsingException(ex.getMessage(), ex, location);
+			throw new JsonParsingException(ex.getMessage(), ex, getLocation());
 		}
-	}
-
-	private JsonLocation createLocation() {
-		return new MyrJsonLocation(lineNo, columnNo, offset);
 	}
 
 	private void endArray() {
@@ -128,7 +121,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		parseString();
 		skipWhitespace();
 		if (readChar() != ':')
-			throw new JsonParsingException("Expected ':' after key", location);
+			throw new JsonParsingException("Expected ':' after key", getLocation());
 		state = State.OBJECT_VALUE;
 		event = Event.KEY_NAME;
 	}
@@ -142,19 +135,17 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private void nextArrayComma() throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		final char ch = readChar();
 		switch (ch) {
 			case ']' -> endArray();
 			case ',' -> state = State.ARRAY_VALUE;
-			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, location);
+			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, getLocation());
 		}
 	}
 
 	private void nextArrayInit() throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		if (peekChar() == ']') {
 			readChar();
@@ -175,35 +166,32 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private void nextObjectComma() throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		final char ch = readChar();
 		switch (ch) {
 			case '}' -> endObject();
 			case ',' -> state = State.OBJECT_KEY;
-			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, location);
+			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, getLocation());
 		}
 	}
 
 	private void nextObjectInit() throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		final char ch = readChar();
 		switch (ch) {
 			case '}' -> endObject();
 			case '\"' -> keyName();
-			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, location);
+			default -> throw new JsonParsingException("Unexpected " + ch + ", state: " + state, getLocation());
 		}
 	}
 
 	private void nextObjectKey() throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		final char ch = readChar();
 		if (ch != '\"')
-			throw new JsonParsingException("Unexpected " + ch + ", sate: " + state, location);
+			throw new JsonParsingException("Unexpected " + ch + ", sate: " + state, getLocation());
 		keyName();
 	}
 
@@ -213,7 +201,6 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 
 	private void nextValue(final State nextState) throws IOException {
 		skipWhitespace();
-		location = createLocation();
 
 		final char ch = readChar();
 		switch (ch) {
@@ -245,10 +232,10 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 						readChars(chs);
 						for (int i = 0; i < 4; ++i)
 							if (!isHexDigit(chs[i]))
-								throw new JsonParsingException("Invalid unicode escape sequence \"\\u" + new String(chs) + "\"", location);
+								throw new JsonParsingException("Invalid unicode escape sequence \"\\u" + new String(chs) + "\"", getLocation());
 						sb.append((char) Integer.parseUnsignedInt(new String(chs), 16));
 					}
-					default -> throw new JsonParsingException("Unknown escape character " + ch, location);
+					default -> throw new JsonParsingException("Unknown escape character " + ch, getLocation());
 				}
 			} else {
 				sb.append(ch);
@@ -386,7 +373,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			case "true" -> event = Event.VALUE_TRUE;
 			case "false" -> event = Event.VALUE_FALSE;
 			case "null" -> event = Event.VALUE_NULL;
-			default -> throw new JsonParsingException("Unknown keyword: " + keyword, location);
+			default -> throw new JsonParsingException("Unknown keyword: " + keyword, getLocation());
 		}
 
 		state = nextState;
@@ -400,7 +387,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		if (ch0 == '-') {
 			ch = readChar();
 			if (ch < '0' || ch > '9')
-				throw new JsonParsingException("Not a number", location);
+				throw new JsonParsingException("Not a number", getLocation());
 			sb.append((char) ch);
 		} else {
 			ch = ch0;
@@ -424,7 +411,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 			readChar();
 			ch = readChar();
 			if (ch != '+' && ch != '-' && (ch < '0' || ch > '9'))
-				throw new JsonParsingException("Not a number", location);
+				throw new JsonParsingException("Not a number", getLocation());
 			sb.append((char) ch);
 			readDigits(sb);
 		}
@@ -432,7 +419,7 @@ public final class MyrJsonStreamParser extends MyrJsonParserBase {
 		try {
 			numberValue = new BigDecimal(sb.toString());
 		} catch (final NumberFormatException ex) {
-			throw new JsonParsingException(ex.getMessage(), ex, location);
+			throw new JsonParsingException(ex.getMessage(), ex, getLocation());
 		}
 
 		state = nextState;

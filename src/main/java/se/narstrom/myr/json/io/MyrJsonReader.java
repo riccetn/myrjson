@@ -1,7 +1,5 @@
 package se.narstrom.myr.json.io;
 
-import java.util.logging.Logger;
-
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonException;
@@ -17,8 +15,6 @@ import se.narstrom.myr.json.value.MyrJsonNumber;
 import se.narstrom.myr.json.value.MyrJsonString;
 
 public final class MyrJsonReader implements JsonReader {
-	private static final Logger LOG = Logger.getLogger(MyrJsonReader.class.getName());
-
 	private final MyrJsonContext context;
 
 	private final JsonParser parser;
@@ -100,10 +96,7 @@ public final class MyrJsonReader implements JsonReader {
 				throw new JsonParsingException("No key", parser.getLocation());
 
 			final String key = parser.getString();
-			LOG.info(() -> String.format("Key %s", key));
-
 			final JsonValue value = readValue();
-			LOG.info(() -> String.format("Value %s", value));
 
 			builder.add(key, value);
 		}
